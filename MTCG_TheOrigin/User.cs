@@ -8,5 +8,12 @@ namespace MTCG_TheOrigin
 {
     internal class User
     {
+        public string Name;
+        public string Password;
+
+
+        //public string Name { get; set; }
+
+
     }
 }
