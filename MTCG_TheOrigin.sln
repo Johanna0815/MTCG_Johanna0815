@@ -3,12 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG_TheOrigin", "MTCG_TheOrigin\MTCG_TheOrigin.csproj", "{0EDD08C4-B9FE-4063-9EB0-AAFD04BBA6A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG_TheOrigin", "MTCG_TheOrigin\MTCG_TheOrigin.csproj", "{0EDD08C4-B9FE-4063-9EB0-AAFD04BBA6A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D18C903F-7B0F-4029-B5BB-D1A5EEAE0F74}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MTCG_TheOrigin_SubProject.BL", "MTCG_TheOrigin_SubProject.BL\MTCG_TheOrigin_SubProject.BL.csproj", "{A7D8C6D7-615F-47BB-8E5D-C0D17C332D97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG_TheOrigin_Subproject.DA", "MTCG_TheOrigin_Subproject.DA\MTCG_TheOrigin_Subproject.DA.csproj", "{8036A6A9-01BE-431B-8A63-69701E677D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTCG_TheOrigin.Test", "MTCG_TheOrigin.Test\MTCG_TheOrigin.Test.csproj", "{FE2306E4-A294-4397-9A01-22F8E92C9EAF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +26,18 @@ Global
 		{0EDD08C4-B9FE-4063-9EB0-AAFD04BBA6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EDD08C4-B9FE-4063-9EB0-AAFD04BBA6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EDD08C4-B9FE-4063-9EB0-AAFD04BBA6A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7D8C6D7-615F-47BB-8E5D-C0D17C332D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7D8C6D7-615F-47BB-8E5D-C0D17C332D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7D8C6D7-615F-47BB-8E5D-C0D17C332D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7D8C6D7-615F-47BB-8E5D-C0D17C332D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8036A6A9-01BE-431B-8A63-69701E677D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8036A6A9-01BE-431B-8A63-69701E677D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8036A6A9-01BE-431B-8A63-69701E677D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8036A6A9-01BE-431B-8A63-69701E677D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE2306E4-A294-4397-9A01-22F8E92C9EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE2306E4-A294-4397-9A01-22F8E92C9EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE2306E4-A294-4397-9A01-22F8E92C9EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE2306E4-A294-4397-9A01-22F8E92C9EAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
