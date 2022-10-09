@@ -5,3 +5,6 @@ First step was to setup the environment. As an IDE Microsoft Visual Studio, with
 ____ classes created. ______ The Project also includes a second "new Project" created was a "NUnit Test Project" for the Unit Tests within the project. 
 
 
+DataAccessLayer - DAL
+Models
+BusinessLayer - BL
