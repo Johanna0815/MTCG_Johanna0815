@@ -6,7 +6,7 @@ ____ classes created. ______ The Project also includes a second "new Project" cr
 
 
 DataAccessLayer - DAL
-Models
+Model
 BusinessLayer - BL
 HttpServerLayer -HSL
 
