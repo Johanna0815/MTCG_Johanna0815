@@ -1,0 +1,50 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MTCG_TheOrigin_SubProject.HSL
+{
+    public class HttpServer
+    {
+
+        private readonly int port = 8000;
+        private readonly IPAddress ipAddress;
+
+        private TcpListener httpListener;
+
+        public HttpServer(IPAddress address, int port)
+        {
+            this.ipAddress = address;
+            this.port = port;
+
+            httpListener = new TcpListener(ipAddress, port);
+        }
+
+
+        // kein beenden und stoppen noch nicht drin, es fehlen noch zwei Funktionen ! 
+        public void run()
+        {
+
+            httpListener.Start();
+            while(true)
+            {
+                Console.WriteLine("Waiting for new client request...");
+                var clientSocket = httpListener.AcceptTcpClient();
+                var httpProcessor = new HttpProcessor(clientSocket); // oder das vom Thread ableiten !
+                Task.Factory.StartNew(() =>
+                {
+                    httpProcessor.run();
+                });
+            }
+        }
+
+
+
+
+
+    }
+}
