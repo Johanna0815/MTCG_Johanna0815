@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.Model
 {
-    public abstract class MonsterCard
+    public interface IMonsterCard
     {
 
 
-
-        // ich bin eine abstracte klasse
-        // macht es Sinn neben dem ICard auch noch ein MonsterCard abstract class ?
-
+        MonsterType monsterType { get; }
+        IEnumerable<IEffect> Effects { get; }
 
 
 
@@ -21,4 +19,6 @@ namespace MTCG_TheOrigin_SubProject.Model
 
 
     }
+
+    
 }

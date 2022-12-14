@@ -6,30 +6,22 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.HSL
 {
-
-    // public eventuell noch umändern ? // muss ja ins DLA Projekt o?
-    internal class HttpRequest
+    public class HttpRequest
     {
-
-        
         private StreamReader reader;
 
-        public Method Method { get; private set; }
+        public HttpMethod Method { get; private set; }
         //public string Method { get; private set; }     // Method als enum machen.  
-        public string Path
-        {
-            get;
-            private set;
-        }
+        public string[] Path { get; private set; }
 
         // add on new darunter. 
-        public Dictionary<string, string>
+        public Dictionary<string, string> QueryParams = new();
 
         public string ProtocolVersion { get; private set; }
 
         public Dictionary<string, string> headers = new();
 
-        public string Content { get; private set; } 
+        public string Content { get; private set; }
         public HttpRequest(StreamReader reader)
         {
             this.reader = reader;
@@ -49,21 +41,24 @@ namespace MTCG_TheOrigin_SubProject.HSL
         public void Parse()
         {
 
-            // firrst line contains ..
+            // firrst line contains  HTTPMethod Path and Protocol
             string line = reader.ReadLine();
-            Console.WriteLine(line );
+            if (line == null)
+            {
+                return;
+            }
+            Console.WriteLine(line);
             var firstLineParts = line.Split(" ");
-           // Method = firstLineParts[0];
-            Method = (Method)Enum.Parse(typeof(Method), firstLineParts[0]; // noch mal kontrollieren !
+            // Method = firstLineParts[0];
+            Method = (HttpMethod)Enum.Parse(typeof(HttpMethod), firstLineParts[0]);
 
-
-            Path = firstLineParts[1];
-
-            var pathParts = Path.Split("?");
+            var path = firstLineParts[1];
+            var pathParts = path.Split('?');
             if (pathParts.Length == 2) // wenn nur eins wäre, würde das Frageziechen fehlen. 
             {
-                var queryParams = pathParts[1].Split("&");
-                foreach(string queryParam in queryParams)
+                // queryParameters after the ?-char
+                var queryParams = pathParts[1].Split('&');
+                foreach (string queryParam in queryParams)
                 {
                     var queryParamParts = queryParam.Split('=');
                     if (queryParamParts.Length == 2)
@@ -72,61 +67,65 @@ namespace MTCG_TheOrigin_SubProject.HSL
                         QueryParams.Add(queryParamParts[0], null);
                 }
             }
-            
+
+            Path = pathParts[0].Split('/');
+
             ProtocolVersion = firstLineParts[2];
 
             // headers
-            while((line = reader.ReadLine())   != null  )
+            int contentLength = 0;
+            while ((line = reader.ReadLine()) != null)
             {
 
-                Console.WriteLine(line  );
+                Console.WriteLine(line);
                 if (line.Length == 0)
                     break;
 
                 var headerParts = line.Split(": ");
                 headers[headerParts[0]] = headerParts[1];
+                if (headerParts[0] == "Content-Length")
+                    contentLength = int.Parse(headerParts[1]);
                 //Headers = new Dictionary<string, string>();
             }
 
+            // read Http body (if existing)
             Content = "";
-            int contentLength = int.Parse(headers["Content-Length"]);
-            var data = new StringBuilder();
-           
-
-            if (contentLength > 0)
+            if (contentLength > 0 && headers.ContainsKey("Content-Type"))
             {
+                var data = new StringBuilder(200);
                 char[] buffer = new char[1024];
-
-                int totalBytesRead = 0;
-                while (totalBytesRead < contentLength)
+                int bytesReadTotal = 0;
+                while (bytesReadTotal < contentLength)
                 {
-                   
-
-                   var bytesRead = reader.Read(buffer, 0, 1024);
-                    if(bytesRead == 0)
+                    try
                     {
-                        break;
-
-
-                        totalBytesRead += bytesRead;
+                        var bytesRead = reader.Read(buffer, 0, 1024);
+                        bytesReadTotal += bytesRead;
+                        if (bytesRead == 0) break;
                         data.Append(buffer, 0, bytesRead);
-
                     }
+                    // IOException occurs when there is a mismatch of the 'Content-Length'
+                    // becuase different encoding is used ? 
+                    catch (IOException) { break; }
                 }
+
                 Content = data.ToString();
+                Console.WriteLine(Content);
 
             }
 
-             // content
+
+
+            // content
             // fix unten um die länge! 
-           /* Content = "";
-            while ((line = reader.ReadLine()) != null)
-            {
-                Console.WriteLine(  line);
-                Content += line + "/n";
-            }
-           */
-          
+            /* Content = "";
+             while ((line = reader.ReadLine()) != null)
+             {
+                 Console.WriteLine(  line);
+                 Content += line + "/n";
+             }
+            */
+
 
 
 

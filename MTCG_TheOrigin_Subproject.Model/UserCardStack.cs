@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.Model
 {
-    public class UserCardStack : ICard, IUser
+    public class UserCardStack // : ICard, IUser
     {
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Password { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -30,17 +30,22 @@ namespace MTCG_TheOrigin_SubProject.Model
             throw new NotImplementedException();
         }
 
+
+        
+
+
         // a User has  multiple cards in his stack
-        public UserCardStack(Card[] cardList, string user)
-        {
-            //Card[] CardStack = new UserCardStack[];
-            //CardStack[0] = new UserCardStack[] { Goblin, Dragon };
+        //public void UserCardStack(Card cardList, string userName, int trading)
+        //{
+           
+        //    List<Card> cards = new List<Card>();
+        //    cards.Add(new Card(CardName, cardList));
 
 
+        //    // remove auch hier gleich mit trading ?
 
-
-            throw new NotImplementedException();
-        }
+        //    throw new NotImplementedException();
+        //}
 
     }
 }

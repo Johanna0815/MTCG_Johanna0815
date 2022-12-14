@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG_TheOrigin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,9 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.Model
 {
-    public abstract class SpellCard
+    internal interface ISpeciality
     {
-        
 
-        // ich bin eine abstracte klasse
-
-
-
+        void Apply(ICard doIt, ICard other, IDamage damage);
     }
 }
