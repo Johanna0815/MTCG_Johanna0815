@@ -9,12 +9,18 @@ namespace MTCG_TheOrigin
     public class User //: IUser
     {
         
-        public string _Name { get; set; }
+        public string Username { get; set; }
         
 
 
-        private string _Password { get; set; } // public ?
+        public string Password { get; set; } // public ?
 
+
+        public User(string username, string password)
+        {
+            Username = username;
+            Password = password;
+        }
 
        
 

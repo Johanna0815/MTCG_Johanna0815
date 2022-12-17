@@ -77,7 +77,7 @@ namespace MTCG_TheOrigin_SubProject.HSL
                 Console.WriteLine(Content);
             }
 
-            writer.Flush();
+            writer.Flush(); // -!
             writer.Close();
 
             Console.WriteLine();

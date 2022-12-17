@@ -12,7 +12,7 @@ namespace MTCG_TheOrigin_SubProject.HSL
 
         public HttpMethod Method { get; private set; }
         //public string Method { get; private set; }     // Method als enum machen.  
-        public string[] Path { get; private set; }
+        public string Path { get; private set; }
 
         // add on new darunter. 
         public Dictionary<string, string> QueryParams = new();
@@ -68,7 +68,9 @@ namespace MTCG_TheOrigin_SubProject.HSL
                 }
             }
 
-            Path = pathParts[0].Split('/');
+            //  Path = pathParts[0].Split('/');
+
+            Path = pathParts[0];
 
             ProtocolVersion = firstLineParts[2];
 

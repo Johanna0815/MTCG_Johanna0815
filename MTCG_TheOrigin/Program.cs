@@ -3,6 +3,7 @@
 
 // using MTCG_TheOrigin_SubProject.HSL;
 using MTCG_TheOrigin_SubProject.HSL;
+using MTCG_TheOrigin_SubProject.Model;
 using System.Net;
 using System.Reflection;
 
@@ -12,7 +13,9 @@ Console.WriteLine("Hello, World! Origin Main");
 
 //80000 || loopback
 var server = new HttpServer(IPAddress.Any, 10001);
-// server.RegisterEndpoint("users", new UsersEndpoint()); // die finden sich nciht, lässt sich nicht integrieren. // ned da 
+
+// raus comm nomal!
+ server.RegisterEndpoint("/users", new UsersEndpoint()); // die finden sich nciht, lässt sich nicht integrieren. // ned da 
 
 
 server.run();

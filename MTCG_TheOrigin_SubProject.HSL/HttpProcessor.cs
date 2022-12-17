@@ -36,37 +36,63 @@ namespace MTCG_TheOrigin_SubProject.HSL
             var writer = new StreamWriter(clientSocket.GetStream()) { AutoFlush = true };
             var response = new HttpResponse(writer); // nur HttpResponseMessage nicht ? 
 
-            try
+
+            IHttpEndpoint endpoint;
+            httpServer.Endpoints.TryGetValue(request.Path, out endpoint); // nullexception! /users bene
+                                                                          //try
+                                                                          //{
+
+            // user unhandled - is aber au ned drin
+
+            // II. Abänderung. v
+            //  var endpoint = httpServer.Endpoints[request.Path[1]]; // NullReferenceException. /bug
+            if (endpoint != null)
             {
-
-                // user unhandled - is aber au ned drin
-
-                var endpoint = httpServer.Endpoints[request.Path[1]]; // NullReferenceException. /bug
-                if (endpoint != null)
-                {
-                    endpoint.HandleRequest(request, response);
-                }
-                else
-                {
-                    // Thread.Sleep(10000);
-                    response.ResponseCode = 200;
-                    response.ResponseText = "OK";
-                    response.Content = "<html><body> Hello Writer here we are! </body></hmtl>";
-                    response.Headers.Add("Content-Length", response.Content.Length.ToString());
-                    response.Headers.Add("Content-Type", "text/plain");
-                }
+                endpoint.HandleRequest(request, response);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine($"{ex} occured - endpoint HAndleRequest");
+
+                // oder hier gleich Response "400 " mal schauen. 
+
+
+
+
+                //Console.WriteLine($"{ex} occured - endpoint HAndleRequest");
                 response.ResponseCode = 404;
                 response.ResponseText = "BAD REQUEST";
                 response.Content = "<html><body>Endpoint not found! </body></hmtl>";
-                //response.Headers.Add("Content-Length", response.Content.Length.ToString());
+                // response.Headers.Add("Content-Length", response.Content.Length.ToString());
                 response.Headers.Add("Content-Type", "text/plain");
+
+
+
+                // Thread.Sleep(10000);
+                //response.ResponseCode = 200;
+                //    response.ResponseText = "OK";
+                //    response.Content = "<html><body> Hello Writer here we are! </body></hmtl>";
+                //    response.Headers.Add("Content-Length", response.Content.Length.ToString());
+                //    response.Headers.Add("Content-Type", "text/plain");
             }
 
             response.Process();
+
+
+
+
+
+
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"{ex} occured - endpoint HAndleRequest");
+            //    response.ResponseCode = 404;
+            //    response.ResponseText = "BAD REQUEST";
+            //    response.Content = "<html><body>Endpoint not found! </body></hmtl>";
+            //    //response.Headers.Add("Content-Length", response.Content.Length.ToString());
+            //    response.Headers.Add("Content-Type", "text/plain");
+            //}
+
+
         }
     }
 }
