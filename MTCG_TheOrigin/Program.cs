@@ -22,19 +22,6 @@ server.run();
 
 
 
-//WebProxy proxy = new WebProxy();
-//proxy.BypassProxyOnLocal = true;
-//proxy.Credentials = CredentialCache.DefaultNetworkCredentials;
-
-//HttpClientHandler clientHandler = new HttpClientHandler
-//{
-//    Proxy = proxy
-//};
-
-//var Client = new HttpClient(clientHandler);
-//Client.BaseAddress = new Uri("http://localhost:10001"); // -
-
-
 
 
 // wollte etwas testen, aber das als Subproject zu testen "would cause a circular dependency!)
