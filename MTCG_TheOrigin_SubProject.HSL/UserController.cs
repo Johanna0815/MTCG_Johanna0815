@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.HSL
 {
+    
     public class UserController
     {
+
+
 
         public void createUser()
         {
 
         }
+
+
+
+
+
+
 
 
     }

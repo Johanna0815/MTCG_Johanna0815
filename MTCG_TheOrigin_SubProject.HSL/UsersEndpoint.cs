@@ -39,7 +39,7 @@ namespace MTCG_TheOrigin_SubProject.Model
                 var user = JsonSerializer.Deserialize<User>(rq.Content);
 
 
-                // call BL.
+                // call BL fehlt no reinholen. 
 
                 rs.ResponseCode = 201;
                 rs.ResponseText = "OK";

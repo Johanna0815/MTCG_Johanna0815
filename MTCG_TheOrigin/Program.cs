@@ -2,6 +2,8 @@
 
 
 // using MTCG_TheOrigin_SubProject.HSL;
+using MTCG_TheOrigin;
+using MTCG_TheOrigin_Subproject.DA;
 using MTCG_TheOrigin_SubProject.HSL;
 using MTCG_TheOrigin_SubProject.Model;
 using System.Net;
@@ -16,6 +18,11 @@ var server = new HttpServer(IPAddress.Any, 10001);
 
 // raus comm nomal!
  server.RegisterEndpoint("/users", new UsersEndpoint()); // die finden sich nciht, lässt sich nicht integrieren. // ned da 
+
+
+//liste einbinden! 
+//var response;
+//IEnumerable<User> response = await DataBaseConnectionHandler.Register(if exists from users );
 
 
 server.run();
