@@ -4,9 +4,14 @@ This HTTP/REST-based server is built to be a platform for trading and battling w
 First step was to setup the environment. As an IDE Microsoft Visual Studio, with an "Console App" Project started as a new Project. Within this project there was 
 ____ classes created. ______ The Project also includes a second "new Project" created was a "NUnit Test Project" for the Unit Tests within the project. 
 
+Overall there are five SubProjects and 1 MainProject:
 
+MTCG_TheOrigin - MainProject
+MTCG_TheOrigin.Test - Tests/Unittests
 DataAccessLayer - DAL
 Model
 BusinessLayer - BL
 HttpServerLayer -HSL
+
+I regretted very much having designed the project with subprojects. Because it turned out to be difficult for me to include the subprojects. However, I learned afterwards that you only have to integrate the subprojects into the MainProjekt (MTCG_TheOrigin <- in my case); to avoid circular dependence.
 
