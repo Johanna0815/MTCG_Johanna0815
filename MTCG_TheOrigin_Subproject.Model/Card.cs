@@ -11,9 +11,14 @@ namespace MTCG_TheOrigin
     public class Card //: ICard
     {
 
+        public int CId { get; set; }
+        public string CardType { get; set; }
+
         public string CardName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
        // public int Damage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string ElementType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public int Damage { get; set; }
 
 
         // Damage of a card is constant and does not change!!
@@ -22,15 +27,15 @@ namespace MTCG_TheOrigin
         //    Damage= 0;
         //}
 
-        public Card(string CardName, string element)
-        {
+        //public Card(string CardName, string element)
+        //{
 
-            this.CardName = CardName; 
-            this.ElementType = element;
-           // this.Damage = damageOfCard;
+        //    this.CardName = CardName; 
+        //    this.ElementType = element;
+        //   // this.Damage = damageOfCard;
 
 
-        }
+        //}
 
 
         // abchecken, dass mind 5 auf der hand sind ?

@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using HttpMethod = MTCG_TheOrigin_SubProject.HSL.HttpMethod;
 
-namespace MTCG_TheOrigin_SubProject.Model
+namespace MTCG_TheOrigin
 {
     public class UsersEndpoint : IHttpEndpoint
     {
@@ -16,7 +16,7 @@ namespace MTCG_TheOrigin_SubProject.Model
         public void HandleRequest(HttpRequest rq, HttpResponse rs)
         {
 
-
+            // im main int
             switch(rq.Method)
             {
                 case HttpMethod.POST:
@@ -58,6 +58,8 @@ namespace MTCG_TheOrigin_SubProject.Model
             // BL
 
             List<User> users = new List<User>();
+
+            // kommt ja aus db ! 
             users.Add(new User("Anton Erster", "1234"));
             users.Add(new User("Berta Zweite", "0000"));
 

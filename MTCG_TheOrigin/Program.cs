@@ -11,6 +11,10 @@ using System.Reflection;
 
 Console.WriteLine("Hello, World! Origin Main");
 
+
+
+
+
 // hier dann den Server aufrufen
 
 //80000 || loopback
@@ -28,10 +32,19 @@ var server = new HttpServer(IPAddress.Any, 10001);
 server.run();
 
 
+static async Task<string> POST(string query, Credentials body, HttpBody request = null)
+{
+    string response = "string.Empty";
+    bool await;
 
 
+    switch(await)
+    {
+        case "/login":
+            response = await DataBaseConnectionHandler.Login(username: body.username, password: body.password); 
 
-// wollte etwas testen, aber das als Subproject zu testen "would cause a circular dependency!)
-// MTCG_TheOrigin_SubProject.Model.UserCardStack testen = new UserCardStack();
+            break;
+        default: response = await DataBaseConnectionHandler.Register(username: body.username, password: body.password);
 
-
+    }
+}

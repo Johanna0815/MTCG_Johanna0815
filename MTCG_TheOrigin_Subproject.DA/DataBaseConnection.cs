@@ -13,6 +13,9 @@ namespace MTCG_TheOrigin_Subproject.DA
     public class DataBaseConnection
     {
 
+       // string connectionString = Configur
+
+
         static object commandlock = new object();
         public async Task<NpgsqlConnection> ConnectDB(string server, string username, string password, string db)
         {
@@ -66,6 +69,9 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
+
+        
+
         /// <summary>
         /// // prepare Beispiel !
         /// </summary>
@@ -106,8 +112,9 @@ namespace MTCG_TheOrigin_Subproject.DA
             cmd.CommandText = $"Select uid FROM users WHERE username = @username";
             cmd.Parameters.AddWithValue("username", username);
 
-            //cmd.GetType();
-              cmd.Prepare();
+                        //cmd.GetType();
+           
+              cmd.Prepare();  // set parameters 
            // await using (var reader = await cmd.GetType)
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -120,7 +127,6 @@ namespace MTCG_TheOrigin_Subproject.DA
             }
 
             return 0;
-
         }
 
 
@@ -148,7 +154,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         }
 
 
-        public async Task<bool> ProofToken(string accessToken, Npgsql.NpgsqlCommand cmd)
+        public async Task<bool> ProofToken(string accessToken, NpgsqlCommand cmd)
         {
             string dueDate;
             int uid;
@@ -222,6 +228,49 @@ namespace MTCG_TheOrigin_Subproject.DA
 
         //    }
         //}
+
+
+
+
+
+        //jeder user sollte mit 20 starten können.
+        public void SetUserBalance(int UId, NpgsqlCommand cmd)
+        {
+            lock(commandlock)
+            {
+                cmd.CommandText = $"INSERT INTO balances(uid, coins) VALUES(@uid, 20)";
+                cmd.Parameters.AddWithValue("uid", UId);
+                cmd.Prepare();
+                cmd.ExecuteNonQueryAsync();
+
+
+            }
+        }
+
+        public void SetAccessToken(int uid, string username, string password, NpgsqlCommand cmd)
+        {
+            lock (commandlock)
+            {
+
+                cmd.CommandText = $"INSERT INTO accessTokens(uid, accessToken, dueDate) VALUES(@uid, 'ddmmyyy')";
+                cmd.Parameters.AddWithValue("uid", uid);
+                cmd.Prepare();
+                //cmd.CommandText = $"SELECT act.accessToken FROM users AS u JSON accessTokens AS act ON u.uid WHERE u.username = @username AND u.password = @password";
+                //cmd.Parameters.AddWithValue("username", username);
+                //cmd.Parameters.AddWithValue("username", password);
+                //cmd.Prepare();
+                //await using (var reader = await cmd.ExecuteReaderAsync())
+                //    while (await reader.ReadAsync())
+                //    {
+                //        return (string)reader["accessToken"];
+
+                //    }
+            }
+        }
+
+
+
+
 
     }
     
