@@ -1,4 +1,5 @@
 using Moq;
+using MTCG_TheOrigin_Subproject.DA;
 
 namespace MTCG_TheOrigin.Test
 {
@@ -14,17 +15,25 @@ namespace MTCG_TheOrigin.Test
         [Test]
         public void Battle_Exist()
         {
-            var battle = new BattleTest();
+            var battle = new Battle();
 
             Assert.IsNotNull(battle);
         }
 
 
+
+        //[Test]
+        //public async void SyncUser()
+        //{
+        //    DataBaseConnection db = new DataBaseConnection();
+        //    Assert.Equals(10, user.UID);
+        //}
+
         [Test]
         public void Battle_HasOnePlayer()
         {
             var battle = new Battle();
-            battle.PlayerOne = new Mock<Player>().Object; //mit moq mit .Object bekommt man das Objekt dann. 
+            battle.userA = new Mock<Player>().Object; //mit moq mit .Object bekommt man das Objekt dann. 
 
             Assert.IsNotNull(battle.PlayerOne);
 

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MTCG_TheOrigin_Subproject.DA\MTCG_TheOrigin_Subproject.DA.csproj" />
     <ProjectReference Include="..\MTCG_TheOrigin_Subproject.Model\MTCG_TheOrigin_SubProject.Model.csproj" />
   </ItemGroup>
 

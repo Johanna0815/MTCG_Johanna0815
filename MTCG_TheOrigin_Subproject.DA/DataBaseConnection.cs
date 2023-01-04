@@ -168,6 +168,8 @@ namespace MTCG_TheOrigin_Subproject.DA
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
+
+                    // source https://stackoverflow.com/questions/36797517/sql-select-where-due-date-and-due-time-after-now-without-datetime
                     uid = (int)reader["uid"];
                     due_date = reader["due_date"].ToString();
                     if (DateTime.Now <= DateTime.Parse(due_date))
@@ -495,20 +497,21 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
-        public void SyncUserProfile(UserProfile user, NpgsqlCommand cmd)
+        public void SyncUserProfile(UserProfile uprof, NpgsqlCommand cmd)
         {
             lock(commandlock)
             {
-                cmd.CommandText = "UPDATE "
-
-                    // ELO
-                    // WIN
-                    // LOOS
-                    // DRAW
-                    cmd.Prepare();
+                cmd.CommandText = "UPDATE UserProfile SET Elo = @Elo, Win = @Win, Loos =  @Loos, Draw = @Draw WHERE Uid = @Uid"; // userprofile Proof 
+                cmd.Parameters.AddWithValue("Elo", uprof.Elo); // ELO
+                cmd.Parameters.AddWithValue("Win", uprof.Win);
+                cmd.Parameters.AddWithValue("Draw", uprof.Draw);
+                cmd.Parameters.AddWithValue("Loos", uprof.Loos);
+                cmd.Prepare();
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public void AddCoins(int UID, int )
 
 
         // addCoins
