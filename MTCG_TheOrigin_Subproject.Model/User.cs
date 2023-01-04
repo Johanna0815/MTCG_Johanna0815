@@ -42,29 +42,6 @@ namespace MTCG_TheOrigin
 
 
 
-       
-       
-
-
-
-    
-        //public void SetPassword( string password)
-        //{
-        //    this.Password = password;
-        //    if (Password == null || Password.Length < 4)
-        //    {
-        //    throw new ArgumentException();
-        //    }
-        //    this.Password = password;
-        //}
-
-        
-
-        // just the person whoms pw. 
-        //public string GetPassword()
-        //{
-        //    return this.Password; // password
-        //}
 
         public void DisplayInfoTest(string password)
         {

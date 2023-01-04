@@ -1,9 +1,13 @@
 ﻿using Microsoft.VisualBasic;
+using MTCG_TheOrigin;
+using MTCG_TheOrigin_SubProject.Model;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,11 +23,9 @@ namespace MTCG_TheOrigin_Subproject.DA
         static object commandlock = new object();
         public async Task<NpgsqlConnection> ConnectDB(string server, string username, string password, string db)
         {
-
-            // db weg ?
             var connString = $"Host={server};Username={username};Password={password};Database={db}";
 
-            var conn = new Npgsql.NpgsqlConnection(connString);
+            var conn = new NpgsqlConnection(connString);
             await conn.OpenAsync();
             return conn;
 
@@ -56,13 +58,15 @@ namespace MTCG_TheOrigin_Subproject.DA
 
                 }
 
-                Console.WriteLine(await GetUserIDByusername(username, cmd));
+               // Console.WriteLine(await GetUserIDByusername(username, cmd));
 
-                //SetUserBalance
+                //SetUsersBalance
+                SetUsersBalance(uid, cmd);
+                SetAccessToken(uid, username, password, cmd);
             }
             else
             {
-                Console.WriteLine("Choose different Username, already token!!!");
+                Console.WriteLine("\t\r\nUser with same username already registered");
             }
 
         }
@@ -109,7 +113,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         public async Task<int> GetUserIDByusername(string username, NpgsqlCommand cmd)
         {
             // cmd.CommandText = username ;
-            cmd.CommandText = $"Select uid FROM users WHERE username = @username";
+            cmd.CommandText = $"SELECT uid FROM users WHERE username = @username";
             cmd.Parameters.AddWithValue("username", username);
 
                         //cmd.GetType();
@@ -134,8 +138,8 @@ namespace MTCG_TheOrigin_Subproject.DA
         {
             int uid;
             string accessToken;
-            string dueDate;
-            var cmd = new NpgsqlCommand($"SELECT u.uid, u.username, act.accessToken, act.dueDate FROM users AS u JOIN accessTokens AS act ON u.uid = act.uid WHERE u.username = @username AND u.password = @password", con);
+            string due_date;
+            var cmd = new NpgsqlCommand($"SELECT u.uid, u.username, act.accessToken, act.due_date FROM users AS u JOIN accessTokens AS act ON u.uid = act.uid WHERE u.username = @username AND u.password = @password", con);
             //cmd.Parameters.AddRange
             cmd.Parameters.AddWithValue("username", username);
             cmd.Parameters.AddWithValue("username", password);
@@ -145,7 +149,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 {
                     uid = (int)reader.GetInt32("uid"); // try ?!
                     accessToken = (string)reader["accessToken"];
-                    dueDate = reader["dueDate"].ToString(); // att: converting null literal or possibel null val to non_null
+                    due_date = reader["due_date"].ToString(); // att: converting null literal or possibel null val to non_null
                     return $"{{\"msg\":\"Login successfull!\", \"uid\":{uid}, \"accessToken\": \"{accessToken}\", \"success\": true}}";
                 }
 
@@ -156,17 +160,17 @@ namespace MTCG_TheOrigin_Subproject.DA
 
         public async Task<bool> ProofToken(string accessToken, NpgsqlCommand cmd)
         {
-            string dueDate;
+            string due_date;
             int uid;
-            cmd.CommandText = $"SELECT u.uid, u.username, act.dueDate FROM users AS u JSON accessTokens AS act ON u.uid = act.uid WHERE act.accessToken = @accessToken";
+            cmd.CommandText = $"SELECT u.uid, u.username, act.due_date FROM users AS u JSON accessTokens AS act ON u.uid = act.uid WHERE act.accessToken = @accessToken";
             cmd.Parameters.AddWithValue("accessToken", accessToken);
             cmd.Prepare();
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
                     uid = (int)reader["uid"];
-                    dueDate = reader["dueDate"].ToString();
-                    if (DateTime.Now <= DateTime.Parse(dueDate))
+                    due_date = reader["due_date"].ToString();
+                    if (DateTime.Now <= DateTime.Parse(due_date))
                     {
                         return true;
 
@@ -176,7 +180,6 @@ namespace MTCG_TheOrigin_Subproject.DA
                     }
                 }
             return false;
-            //  return -1;
         }
 
 
@@ -230,11 +233,34 @@ namespace MTCG_TheOrigin_Subproject.DA
         //}
 
 
+        //BUG
+        /// userStats sind eigentlich name, Elo, Wins, Losses. {swagger} 
+        public async Task<UserProfile> GetUserProfile(int uid, NpgsqlCommand cmd)
+        {
+            cmd.CommandText = "SELECT * FROM userProfile WHERE uid = @uid";
+            cmd.Parameters.AddWithValue("uid", uid);
+            cmd.Prepare();
+
+            UserProfile userProfile = new UserProfile();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while(await reader.ReadAsync())
+                {
+                    userProfile.UID = (int)reader["UID"];
+                    userProfile.Win = (int)reader["Win"];
+                    userProfile.Elo = (int)reader["Elo"]; // unauffindbar.
+                    userProfile.Deck = (int[])reader["Deck"]; // BUG. 
+                    userProfile.Loos = (int)reader["Loos"];
+                   // userProfile.
+                }
+            return userProfile;
+        }
+
+
 
 
 
         //jeder user sollte mit 20 starten können.
-        public void SetUserBalance(int UId, NpgsqlCommand cmd)
+        public void SetUsersBalance(int UId, NpgsqlCommand cmd)
         {
             lock(commandlock)
             {
@@ -255,6 +281,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 cmd.CommandText = $"INSERT INTO accessTokens(uid, accessToken, dueDate) VALUES(@uid, 'ddmmyyy')";
                 cmd.Parameters.AddWithValue("uid", uid);
                 cmd.Prepare();
+                cmd.ExecuteNonQueryAsync();
                 //cmd.CommandText = $"SELECT act.accessToken FROM users AS u JSON accessTokens AS act ON u.uid WHERE u.username = @username AND u.password = @password";
                 //cmd.Parameters.AddWithValue("username", username);
                 //cmd.Parameters.AddWithValue("username", password);
@@ -267,6 +294,227 @@ namespace MTCG_TheOrigin_Subproject.DA
                 //    }
             }
         }
+
+
+
+   //ohne passwort!
+        public async Task<int>  GetAccessToken(string username, NpgsqlCommand cmd)
+        {
+            int uid = await GetUserIDByusername(username, cmd);
+            cmd.CommandText = $"SELECT coind FROM balances WHERE uid = @uid";
+            cmd.Parameters.AddWithValue("uid", uid);
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                    return reader.GetInt32(0);
+            return 0;
+        }
+
+
+        public async Task<int> GetCoinsByUserID(int uid, NpgsqlCommand cmd)
+        {
+            cmd.CommandText = $"SELECT * FROM balances WHERE uid = @uid";
+            cmd.Parameters.AddWithValue("uid", uid);
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                    return (int)reader["coins"];
+            return 0;
+        }
+
+        public async Task<int> NewPack(int uid, NpgsqlCommand cmd)
+        {
+            int newCoins = await GetCoinsByUserID(uid, cmd) - 5;
+            lock(commandlock)
+            {
+                // HMACMD5.
+                cmd.CommandText = $"UPDATE balances SET coins = @newCoins WHERE uid = @uid";
+                cmd.Parameters.AddWithValue("newCoins", newCoins);
+                cmd.Parameters.AddWithValue("uid", uid);
+                cmd.Prepare();
+                cmd.ExecuteNonQuery();
+                return newCoins;
+            }
+        }
+
+        public async Task<int[]> GetRandom(NpgsqlCommand cmd)
+        {
+            //cmd.UnknownResultTypeLis
+            cmd.CommandText = $"SELECT count(*) FROM cardDeck";
+            int[] cardIDArray = new int[5]; //
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    decimal totalCount = (decimal)reader["count"];
+                    for (int i = 0; i < cardIDArray.Length; i++)
+                    {
+                        Random random = new Random();
+                        cardIDArray[i] = random.Next(1, (int)totalCount);
+                    }
+                }
+            return cardIDArray;    
+        }
+
+        public async Task<Card> GetCardByCardId(int CId, NpgsqlCommand cmd)
+        {
+
+            Console.WriteLine(CId);
+
+            cmd.CommandText = $"SELECT CId, CardType, CardName, ElementType, Damage FROM CardDeck WHERE CId = @CId";
+            cmd.Parameters.AddWithValue("CId", CId);
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Card card = new Card
+                    {
+                    CId = (int)reader["CId"],
+                    CardType = (string)reader["CardType"],
+                    CardName = (string)reader["CardName"],
+                    ElementType = (string)reader["ElementType"],
+                    Damage = (int)reader["Damage"] // auf decimal wechseln BUG
+                   
+                    };
+                   return card; 
+
+
+                }
+         return new Card();   
+        }
+
+        public void CardToUser(int UID, int[] cardIdArray, NpgsqlCommand cmd) // user UID class user 
+        {
+
+            lock (commandlock)
+            {
+                for (int i = 0; i < cardIdArray.Length; i++) 
+                {
+                    int pivot = cardIdArray[i];
+                    cmd.CommandText = $"INSERT INTO collections(UID, CId) VALUES (@UID, @CId)";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("UID", UID);
+                    cmd.Parameters.AddWithValue("CId", pivot);
+                    cmd.Prepare();
+                    var reader = cmd.ExecuteNonQuery;
+                }
+            }
+
+        }
+        
+
+        public async Task<List<Card>> GenerateCardList(int[] cardIdArray, NpgsqlCommand cmd)
+        {
+            //lock (commandlock) || jeder kann erstellen zeitglecih.
+            //{
+
+            //}
+
+            List<Card> list = new List<Card>();
+            cmd.CommandText = $"SELECT CId, CardType, CardName, ElementType, Damage FROM CardDeck WHERE CId in (@1, @2, @3, @4, @5)";
+            for (int i = 0; i < cardIdArray.Length; i++) // Overflowexception ? // BUG ?! 
+            {
+                cmd.Parameters.AddWithValue($"{i + 1}", cardIdArray[i]);
+
+            }
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Card card = new Card
+                    {
+                        CId = (int)reader["CId"],
+                        CardType = (string)reader["CardType"],
+                        CardName = (string)reader["CardName"],
+                        ElementType = (string)reader["ElementType"],
+                        Damage = (int)reader["Damage"] // auf decimal wechseln BUG
+
+                    };
+                    list.Add(card);
+                }
+
+            return list;
+
+        }
+        
+
+
+        public async Task<List<Card>> GetUsersCollection(int UID, NpgsqlCommand cmd)
+        {
+
+            List<Card> list = new List<Card>();
+            cmd.CommandText = $"SELECT CId, CardType, CardName, ElementType, Damage FROM CardDeck WHERE CId in (@1, @2, @3, @4, @5)";
+            for (int i = 0; i < cardIdArray.Length; i++) // Overflowexception ? // BUG ?! 
+            {
+                cmd.Parameters.AddWithValue($"{i + 1}", cardIdArray[i]);
+
+            }
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    Card card = new Card
+                    {
+                        CId = (int)reader["CId"],
+                        CardType = (string)reader["CardType"],
+                        CardName = (string)reader["CardName"],
+                        ElementType = (string)reader["ElementType"],
+                        Damage = (int)reader["Damage"] // auf decimal wechseln BUG
+
+                    };
+                    list.Add(card);
+                }
+
+            return list;
+        }
+
+
+        public async Task<UserProfile> GetUserProfile(int UID, NpgsqlCommand cmd)
+        {
+
+            UserProfile user = new UserProfile();
+            cmd.CommandText = $"SELECT UserProfile.UID, UserProfile.Draw, UserProfile.Elo, UserProfile.Loos, UserProfile.Deck, UserProfile.Win, UserProfile.UserName";
+            cmd.Parameters.AddWithValue("Uid", UID);
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    //   UserProfile userProfile = new UserProfile();
+
+                    user.UID = (int)reader["UID"];
+                    user.UserName = (string)reader["UserName"];
+                    user.Win = (int)reader["Win"];
+                    user.Loos = (int)reader["Loos"];
+                    user.Draw = (int)reader["Draw"];
+                    user.Elo = (int)reader["Elo"];
+                    user.Deck = (int[])reader["Deck"];
+
+                }
+            return user;
+        }
+
+
+
+        public void SyncUserProfile(UserProfile user, NpgsqlCommand cmd)
+        {
+            lock(commandlock)
+            {
+                cmd.CommandText = "UPDATE "
+
+                    // ELO
+                    // WIN
+                    // LOOS
+                    // DRAW
+                    cmd.Prepare();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+
+        // addCoins
+        // SetDeck
+        //ToCheckUserHasCards
+        //BattleStart
 
 
 

@@ -14,9 +14,9 @@ namespace MTCG_TheOrigin_SubProject.Model
         public int Sender_uid { get; set; }
         public int ReceiverUID { get; set; }
 
-        public int[] I_receive { get; set; }
+        public int[] A_receive { get; set; }
         
-        public int[] U_receive { get; set; }
+        public int[] B_receive { get; set; }
         
         public string Status { get; set; }
 

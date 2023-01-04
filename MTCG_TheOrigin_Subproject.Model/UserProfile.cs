@@ -12,7 +12,7 @@ namespace MTCG_TheOrigin_SubProject.Model
         public string UserName { get; set; }
         // public string Description { get; set; }
         public int Elo { get; set; } = 100;
-        public int[] Deck { get; set;} = new int[0];
+        public int[] Deck { get; set;} = new int[4]; // deck // is not null here. BUG
         public int Win { get; set; } = 0;
         public int Loos { get; set; } = 0;
         public int Draw { get; set; } = 0;

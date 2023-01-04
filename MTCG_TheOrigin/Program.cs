@@ -41,10 +41,14 @@ static async Task<string> POST(string query, Credentials body, HttpBody request 
     switch(await)
     {
         case "/login":
-            response = await DataBaseConnectionHandler.Login(username: body.username, password: body.password); 
-
+           response = await DataBaseConnectionHandler.Login(username: body.username, password: body.password);
             break;
-        default: response = await DataBaseConnectionHandler.Register(username: body.username, password: body.password);
+        case "/register":
+            response = await DataBaseConnectionHandler.Register(body.username, body.password);
+            break;
+        case "/openPack":
+           // response = await DataBaseConnectionHandler.
+       // default: response = await DataBaseConnectionHandler.Register(username: body.username, password: body.password);
 
     }
 }

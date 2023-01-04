@@ -60,8 +60,8 @@ namespace MTCG_TheOrigin
             List<User> users = new List<User>();
 
             // kommt ja aus db ! 
-            users.Add(new User("Anton Erster", "1234"));
-            users.Add(new User("Berta Zweite", "0000"));
+            //users.Add(new User("Anton Erster", "1234"));
+            //users.Add(new User("Berta Zweite", "0000"));
 
             rs.Content = JsonSerializer.Serialize(users);
             rs.ContentType= "application/json";
