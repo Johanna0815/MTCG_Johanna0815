@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using MTCG_TheOrigin;
 using MTCG_TheOrigin_SubProject.Model;
+using MTCG_TheOrigin_Subproject.BL;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace MTCG_TheOrigin_Subproject.DA
     public class DataBaseConnection
     {
 
-       // string connectionString = Configur
+        // string connectionString = Configur
 
 
         static object commandlock = new object();
@@ -58,7 +59,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
                 }
 
-               // Console.WriteLine(await GetUserIDByusername(username, cmd));
+                // Console.WriteLine(await GetUserIDByusername(username, cmd));
 
                 //SetUsersBalance
                 SetUsersBalance(uid, cmd);
@@ -74,7 +75,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
-        
+
 
         /// <summary>
         /// // prepare Beispiel !
@@ -116,10 +117,10 @@ namespace MTCG_TheOrigin_Subproject.DA
             cmd.CommandText = $"SELECT uid FROM users WHERE username = @username";
             cmd.Parameters.AddWithValue("username", username);
 
-                        //cmd.GetType();
-           
-              cmd.Prepare();  // set parameters 
-           // await using (var reader = await cmd.GetType)
+            //cmd.GetType();
+
+            cmd.Prepare();  // set parameters 
+                            // await using (var reader = await cmd.GetType)
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
@@ -192,7 +193,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             cmd.Parameters.AddWithValue("username", password);
             cmd.Prepare();
             await using (var reader = await cmd.ExecuteReaderAsync())
-                while (await reader.ReadAsync() )
+                while (await reader.ReadAsync())
                 {
                     return (string)reader["accessToken"];
 
@@ -245,14 +246,14 @@ namespace MTCG_TheOrigin_Subproject.DA
 
             UserProfile userProfile = new UserProfile();
             await using (var reader = await cmd.ExecuteReaderAsync())
-                while(await reader.ReadAsync())
+                while (await reader.ReadAsync())
                 {
                     userProfile.UID = (int)reader["UID"];
                     userProfile.Win = (int)reader["Win"];
                     userProfile.Elo = (int)reader["Elo"]; // unauffindbar.
                     userProfile.Deck = (int[])reader["Deck"]; // BUG. 
                     userProfile.Loos = (int)reader["Loos"];
-                   // userProfile.
+                    // userProfile.
                 }
             return userProfile;
         }
@@ -264,7 +265,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         //jeder user sollte mit 20 starten können.
         public void SetUsersBalance(int UId, NpgsqlCommand cmd)
         {
-            lock(commandlock)
+            lock (commandlock)
             {
                 cmd.CommandText = $"INSERT INTO balances(uid, coins) VALUES(@uid, 20)";
                 cmd.Parameters.AddWithValue("uid", UId);
@@ -299,8 +300,8 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
-   //ohne passwort!
-        public async Task<int>  GetAccessToken(string username, NpgsqlCommand cmd)
+        //ohne passwort!
+        public async Task<int> GetAccessToken(string username, NpgsqlCommand cmd)
         {
             int uid = await GetUserIDByusername(username, cmd);
             cmd.CommandText = $"SELECT coind FROM balances WHERE uid = @uid";
@@ -327,7 +328,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         public async Task<int> NewPack(int uid, NpgsqlCommand cmd)
         {
             int newCoins = await GetCoinsByUserID(uid, cmd) - 5;
-            lock(commandlock)
+            lock (commandlock)
             {
                 // HMACMD5.
                 cmd.CommandText = $"UPDATE balances SET coins = @newCoins WHERE uid = @uid";
@@ -355,7 +356,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                         cardIDArray[i] = random.Next(1, (int)totalCount);
                     }
                 }
-            return cardIDArray;    
+            return cardIDArray;
         }
 
         public async Task<Card> GetCardByCardId(int CId, NpgsqlCommand cmd)
@@ -371,18 +372,18 @@ namespace MTCG_TheOrigin_Subproject.DA
                 {
                     Card card = new Card
                     {
-                    CId = (int)reader["CId"],
-                    CardType = (string)reader["CardType"],
-                    CardName = (string)reader["CardName"],
-                    ElementType = (string)reader["ElementType"],
-                    Damage = (int)reader["Damage"] // auf decimal wechseln BUG
-                   
+                        CId = (int)reader["CId"],
+                        CardType = (string)reader["CardType"],
+                        CardName = (string)reader["CardName"],
+                        ElementType = (string)reader["ElementType"],
+                        Damage = (int)reader["Damage"] // auf decimal wechseln BUG
+
                     };
-                   return card; 
+                    return card;
 
 
                 }
-         return new Card();   
+            return new Card();
         }
 
         public void CardToUser(int UID, int[] cardIdArray, NpgsqlCommand cmd) // user UID class user 
@@ -390,7 +391,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
             lock (commandlock)
             {
-                for (int i = 0; i < cardIdArray.Length; i++) 
+                for (int i = 0; i < cardIdArray.Length; i++)
                 {
                     int pivot = cardIdArray[i];
                     cmd.CommandText = $"INSERT INTO collections(UID, CId) VALUES (@UID, @CId)";
@@ -403,7 +404,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             }
 
         }
-        
+
 
         public async Task<List<Card>> GenerateCardList(int[] cardIdArray, NpgsqlCommand cmd)
         {
@@ -438,7 +439,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             return list;
 
         }
-        
+
 
 
         public async Task<List<Card>> GetUsersCollection(int UID, NpgsqlCommand cmd)
@@ -499,7 +500,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
         public void SyncUserProfile(UserProfile uprof, NpgsqlCommand cmd)
         {
-            lock(commandlock)
+            lock (commandlock)
             {
                 cmd.CommandText = "UPDATE UserProfile SET Elo = @Elo, Win = @Win, Loos =  @Loos, Draw = @Draw WHERE Uid = @Uid"; // userprofile Proof 
                 cmd.Parameters.AddWithValue("Elo", uprof.Elo); // ELO
@@ -512,7 +513,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         }
 
         // addCoins
-        public void AddCoins(int UID, int value, NpgsqlCommand cmd )
+        public void AddCoins(int UID, int value, NpgsqlCommand cmd)
         {
             lock (commandlock)
             {
@@ -520,20 +521,21 @@ namespace MTCG_TheOrigin_Subproject.DA
                 cmd.Parameters.AddWithValue("UID", UID); // Elo
                 cmd.Parameters.AddWithValue("value", value); // Win.
                 cmd.Prepare();
-                    cmd.ExecuteNonQuery() ;
+                cmd.ExecuteNonQuery();
             }
         }
 
 
-      
+
         // SetDeck
         public async Task<int[]> SetDeck(int UID, UserProfile user, NpgsqlCommand cmd)
         {
 
-            lock (commandlock)
-            {
+            await IfNotExistCreateUserProfile(UID, cmd);
 
-            }
+            // cards zum user 
+            bool UserHasCards = await
+
 
 
 
@@ -548,37 +550,125 @@ namespace MTCG_TheOrigin_Subproject.DA
             cmd.Prepare();
             bool UserProfileExists = false;
             await using (var reader = await cmd.ExecuteReaderAsync())
-            {
-                while (reader.Read())
+
+                while (await reader.ReadAsync())
                 {
                     if ((int)reader["UID"] == UID) UserProfileExists = true;
                 }
 
 
-                if (UserProfileExists == true)
-                                        return "Profile already exists.";
-                        
-                     else
+            if (UserProfileExists == true)
+                return "Profile already exists.";
+
+            else
+            {
+                // anlegen TODO
+                lock (commandlock)
                 {
-                    // anlegen TODO
-                }   
+                    cmd.CommandText = "INSERT INTO UserProfile(UID, Elo, Draw, Win, Loos) VALUES (@UID, 100,0,0,0)";
+                    cmd.Parameters.AddWithValue("UID", UID);
+                    cmd.ExecuteNonQueryAsync();
+                    return "UserProfile was created.";
+                }
 
             }
 
-
-
-
-                
+            // TODO check if created   
         }
 
 
 
         //ToCheckUserHasCards
+        public async Task<bool> ToCheckUserHasCards(int[] cd, int UID, NpgsqlCommand cmd)
+        {
+            cmd.CommandText = "SELECT CId FROM collections WHERE UID =@UID      ";
+            cmd.Parameters.AddWithValue("UID", UID);
+            cmd.Prepare();
+
+            bool UserHasCards = true;
+            var dict = new Dictionary<int, int>();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                {
+                    int cards = (int)reader["CId"];
+                    if (!dict.ContainsKey(cards))
+                    {
+                        dict.Add(cards, 0);
+                        //dict.Remove
+                    }
+                    dict[cards]++;
+                }
+            foreach (var cards in cd)
+            {
+                if (dict.ContainsKey(cards) == false) UserHasCards = false;
+            }
+            return UserHasCards;
+        }
+
         //BattleStart
+        public async void GoBattle(UserProfile user, NpgsqlCommand cmd)
+        {
+            //user starts in queue
+            UserInQueue(user);
+            if (Queue.UserWaitInQueue.Count >= 2)
+            {
+
+                // to CheckForSecond
+                Battle battleResult = await CheckForSecond(cmd) // der 2. abcheckn.
+
+                     // PutUserFromQueue
+                     PutUserFromQueue(battleResult.userA);
+                PutUserFromQueue(battleResult.userB);
+                // sync with DB.
+                SyncUserProfile(battleResult.userA, cmd);
+                SyncUserProfile(battleResult.userB, cmd);
+            }
+
+
+        }
+
+        public void UserInQueue(UserProfile user)
+        {
+            if (Queue.UserWaitInQueue.Where(u => u.UID == user.UID).FirstOrDefault() == null) Queue.UserWaitInQueue.Add(user); // .First
+        }
+
+        public void PutUserFromQueue(UserProfile user)
+        {
+            Queue.UserWaitInQueue.Remove(Queue.UserWaitInQueue.Find(u => u.UID == user.UID));
+        }
+
+        public async Task<Battle> CheckForSecond(NpgsqlCommand)
+        {
+            if (Queue.UserWaitInQueue.Count >= 2)
+            {
+               MTCG_TheOrigin_SubProject.BL.BattleLogic battle = new MTCG_TheOrigin_SubProject.BLBattleLogic();   //  BattleLogic // BUG PROBLEM mit einbinden. in using schon drin!
+                Battle round = new Battle(); // add User to Battle
+                round.userA = Queue.UserWaitInQueue[0];
+                round.userB = Queue.UserWaitInQueue[1];
+                Battle battleResult = await battle.
+       
+
+       
+
+
+            }
+        }
 
 
 
 
+        internal static string GetStringSHA256(string text)
+        {
+            if (String.IsNullOrEmpty(text))
+                return String.Empty;
+
+            using (var sha = new SHA256Managed())
+            {
+                byte[] textD = System.Text.Encoding.UTF8.GetBytes(text);
+                byte[] hash = sha.ComputeHash(textD);
+                return BitConverter.ToString(hash).Replace("-", String.Empty);
+            }
+        }
 
     }
     

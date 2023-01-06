@@ -6,19 +6,9 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.Model
 {
-    public interface IMonsterCard
+    public class Queue
     {
 
-
-        MonsterType monsterType { get; }
-        IEnumerable<IEffect> Effects { get; }
-
-
-
-
-
-
+        public static List<UserProfile> UserWaitInQueue = new List<UserProfile>();
     }
-
-    
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_SubProject.Model
 {
-    public class responseJson
+    public class ResponseJson
     {
         [JsonInclude]
         public string msg { get; set; }

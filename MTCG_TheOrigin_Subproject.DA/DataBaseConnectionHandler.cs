@@ -1,8 +1,11 @@
-﻿using Npgsql;
+﻿using MTCG_TheOrigin;
+using MTCG_TheOrigin_SubProject.Model;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_Subproject.DA
@@ -48,22 +51,64 @@ namespace MTCG_TheOrigin_Subproject.DA
             return null;
         }
 
+        public static async Task<string> NewPack(string username = "", string password = "", string accessToken = "")
+        {
+            if(username != null && password != null || accessToken != null)
+            {
+                string LoginResponse = await Login(username, password, accessToken);
+                ResponseJson json = JsonSerializer.Deserialize<ResponseJson>(LoginResponse); 
+                if(json.success == true)
+                {
+                    DataBaseConnection db = new DataBaseConnection();
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore");
+                    var cmd = new NpgsqlCommand("", con);
 
 
+                    // buyPack
+                    var CoinStat = await db.NewPack(json.uid, cmd);
+                    //get card ids
+                    var cardIdArray = await db.GetRandom(cmd);
+                    // put tu user
 
-        // TODO
-        //public static async Task<string> GetAccessToken(string username = "", string password = "")
-        //{
-        //    if (username != null && password != null)
-        //    {
-               
-        //    }
-        //    //  var cmd = new NpgsqlCommand("", con);
+                    // getCardList
+                    List<Card> CardList = await db.GenerateCardList(cardIdArray, cmd);
+                    string response = JsonSerializer.Serialize<List<Card>>(CardList);
 
-        //    return await todo;
+                    return $"{{\"msg\": \"Pack opened successful.\", \"success\": true, \"coins\": {CoinStat}, \"data\": {response}}}";
+
+                }
+            }
+            return "{\"msg\": \"To purchase Pack failed!\", \"success\": false}";
+        }
 
 
-        //}
+        
+        public static async Task<string> GetAccessToken(string username = "", string password = "")
+        {
+            if (username != null && password != null)
+            {
+
+                string LoginResponse = await Login(username, password);
+                ResponseJson json = JsonSerializer.Deserialize<ResponseJson>(LoginResponse);
+                if(json.success == true)
+                {
+                    DataBaseConnection db = new DataBaseConnection();
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore");
+                    var cmd = new NpgsqlCommand("", con);
+                    var accessToken = await db.GetAccessToken(username, password, cmd);
+
+                    return $"{{\"msg\": \"AccessToken successful in use.\", \"success:\": true, \"data\": {accessToken}}}";
+                }
+                return $"{{\"msg\": \"Authentication failed\", \"success\": false}}";
+            }
+            return $"{{\"msg\": \"Authentication failed\", \"success\": false}}";
+        }
+            
+
+          
+
+
+        
 
 
 
