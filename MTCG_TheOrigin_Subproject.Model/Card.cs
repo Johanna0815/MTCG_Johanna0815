@@ -14,9 +14,9 @@ namespace MTCG_TheOrigin
         public int CId { get; set; }
         public string CardType { get; set; }
 
-        public string CardName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-       // public int Damage { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string ElementType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string CardName { get; set; }
+       
+        public string ElementType { get;  set; }
 
         public int Damage { get; set; }
 

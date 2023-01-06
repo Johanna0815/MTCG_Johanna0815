@@ -511,11 +511,68 @@ namespace MTCG_TheOrigin_Subproject.DA
             }
         }
 
-        public void AddCoins(int UID, int )
-
-
         // addCoins
+        public void AddCoins(int UID, int value, NpgsqlCommand cmd )
+        {
+            lock (commandlock)
+            {
+                cmd.CommandText = "UPDATE balances SET coins = coins + @value WHERE UID = @UID";
+                cmd.Parameters.AddWithValue("UID", UID); // Elo
+                cmd.Parameters.AddWithValue("value", value); // Win.
+                cmd.Prepare();
+                    cmd.ExecuteNonQuery() ;
+            }
+        }
+
+
+      
         // SetDeck
+        public async Task<int[]> SetDeck(int UID, UserProfile user, NpgsqlCommand cmd)
+        {
+
+            lock (commandlock)
+            {
+
+            }
+
+
+
+        }
+
+
+        // userProfile a no 
+        public async Task<string> IfNotExistCreateUserProfile(int UID, NpgsqlCommand cmd)
+        {
+            cmd.CommandText = "SELECT UID FROM UserProfile WHERE UID = @UID";
+            cmd.Parameters.AddWithValue("UID", UID);
+            cmd.Prepare();
+            bool UserProfileExists = false;
+            await using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (reader.Read())
+                {
+                    if ((int)reader["UID"] == UID) UserProfileExists = true;
+                }
+
+
+                if (UserProfileExists == true)
+                                        return "Profile already exists.";
+                        
+                     else
+                {
+                    // anlegen TODO
+                }   
+
+            }
+
+
+
+
+                
+        }
+
+
+
         //ToCheckUserHasCards
         //BattleStart
 

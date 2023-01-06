@@ -46,7 +46,6 @@ namespace MTCG_TheOrigin_SubProject.BL
             CardDeck deA = new CardDeck();
             CardDeck deB = new CardDeck();
 
-            //methode di raus zu holen. 
             deA.DeckCards = GetLookAtCardDeck(deckA, cardDeck); // BUG is not null ?
             deB.DeckCards = GetLookAtCardDeck(deckB, cardDeck);
 
@@ -60,19 +59,66 @@ namespace MTCG_TheOrigin_SubProject.BL
                 {
                     Console.WriteLine();
 
-                    // Cards adden
+                    
 
-
+                    int WinnerOfRound = (int)BattleWithTwoCards(deA.DeckCards[0], deB.DeckCards[0]);
 
                     // draw
+                    if (WinnerOfRound == 0)
+                    {
+                        Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE EQUALS {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
+                        Console.WriteLine("It´s a DRAW.");
+
+
+                        deA.DeckCards.RemoveAt(0);
+                        deB.DeckCards.RemoveAt(0);
+
+                        // deckkarten anziegen danach !
+                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+
+                    }
                     // win
-                    // loos
+                    // case userA wins. Remove card from deckB
+                    if (WinnerOfRound == 1)
+                    {
+
+                        Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE DESTROYED {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
+                        Console.WriteLine($"{battle.userA.UserName} Winner of the ROUND.");
+
+                        deA.DeckCards.Add(deB.DeckCards[0]);
+                        deB.DeckCards.RemoveAt(0);
+
+                        // deckkarten anziegen danach !
+                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                    }
+                     // win
+                    // case UserB wins. Remove card from DeckA
+                    if (WinnerOfRound == 2)
+                    {
+
+                        Console.WriteLine($"{deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE DESTROYED {deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE");
+                        Console.WriteLine($"{battle.userB.UserName} Winner of the ROUND.");
 
 
+                        // deckkarten anziegen danach !
+                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                    }
+
+
+                  
+                    // next rounds. 
+                    round++;
 
                 }
-            }
 
+                // loos
+                // TODO 
+
+            }
+            return battle;
         }
 
 
@@ -144,12 +190,36 @@ namespace MTCG_TheOrigin_SubProject.BL
             // The element type does not effect pure monster fights.
 
             // in this case monster must be involved. // and no monster and speLL?// elementType no effect
-            if (cardA.CardType == "monster" ^ cardB.CardType == "monster")
+            if (cardA.CardType == "monster" && cardB.CardType == "monster")
             {
+                // Card.Damage : cardA.Damage > cardB.Damage return 1 ? ReturnTypeEncoder 2;
+                   if(cardA.Damage > cardB.Damage) return 1;
+                if (cardA.Damage < cardB.Damage) return 2;
+                if(cardA.Damage == cardB.Damage) return 3; // cardA not null here BUG. // bug im damage
+
+
                 // 
             }
             // in this case Spell is involved.
+            if (cardA.CardType == "spell" || cardB.CardType == "spell" )
+            {
+                decimal caA = cardA.Damage;
+                if (caA * DaamageCalculator(cardA, cardB) > cardB.Damage)
+                {
 
+                    return 1;
+                }
+                if (caA * DaamageCalculator(cardA, cardB) <  cardB.Damage)
+                {
+                    return 2;
+                }
+                if (caA * DaamageCalculator(cardA, cardB) == cardB.Damage)
+                {
+                    return 0;
+                }
+
+
+            }
 
 
             return 0m;
