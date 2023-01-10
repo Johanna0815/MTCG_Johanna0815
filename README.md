@@ -27,27 +27,27 @@ But for me it was more important that the project runs. [MUST HAVES should be in
 - Implements at least 20 Unit Tests
 
 
-####Describes design
+#### Describes design
 unique design I guess, boxing/unboxing, classes separate from the Main Project. lambda Functions, Generics/ Dictionary used. 
 Token Based Security. 
-###POST
+### POST
 each request needs UserName and Password OR AccessToken
-###GET
+### GET
 each request needs UserName and Password OR AccessToken
-####Describes lessons learned
+#### Describes lessons learned
 
 
-####Describes unit testing decisions
+#### Describes unit testing decisions
 Tests separate with NUnit.Framework
 works with json file and Postman. 
 
-####Describes unique feature
+#### Describes unique feature
 trade. t.b.a
 
-####Contains tracked time
+#### Contains tracked time
 tracked time; in an leap year I would have needed one more day. 
 
-####Contains link to GIT
+#### Contains link to GIT
 https://github.com/Johanna0815/MTCG_Johanna0815
 
 
