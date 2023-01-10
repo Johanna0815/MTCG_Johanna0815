@@ -21,9 +21,9 @@ But for me it was more important that the project runs. [MUST HAVES should be in
 - Implements a server listening to incoming clients {diligent server is included}
 - Implements multiple threads to serve client requests { yes, with keyword async the tasks run contemporaneous - asynchron}
 - Does not use an HTTP helper framework {NO, indeed not.}
-- Uses a Postgres Database for storing data {yes, I use a docker container, where whenever the start commands are used the 'postgres' runs. and it is connected and included in the project (Npgsql as a package in the Subprojcet.DA) for visual purpose I used DBeaver - named it mtcg_theorigin}
+- Uses a Postgres Database for storing data {Yes, I use a docker container, where whenever the commands [docker start swe1db] [docker exec -it swe1db bash] [psql -U swe1user] are used the 'postgres'-Container runs. Postgres DB is connected and included in the project (Npgsql as a package in the Subprojcet.DA) for visual purpose I used DBeaver - named it mtcg_theorigin}
 - Does not allow for SQL injection {emmm...NO?!}
-- Does not use an OR-Mapping Library {NO, indeed not.}
+- Does not use an OR-Mapping Library {NO, indeed not. Serialized and Desirialized with Json.Desirializer library and an Attribute [Serializable] and [JSONInclude] <- detrimming the String.}
 - Implements at least 20 Unit Tests {t.b.a}
 
 
@@ -35,7 +35,7 @@ each request needs UserName and Password OR AccessToken
 ### GET
 each request needs UserName and Password OR AccessToken
 #### Describes lessons learned
-
+t.b.a
 
 #### Describes unit testing decisions
 Tests separate with NUnit.Framework
