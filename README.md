@@ -1,8 +1,7 @@
 # MTCG_Johanna0815
 This HTTP/REST-based server is built to be a platform for trading and battling with and against each other in a magical card-game world.
 
-First step was to setup the environment. As an IDE Microsoft Visual Studio, with an "Console App" Project started as a new Project. Programming Language C#, .net6 Version. Within this project there was 
-x classes created (later removed and reorganized them). The Project also includes a second "new Project" created was a "NUnit Test Project" for the Unit Tests within the project. 
+First step was to setup the environment. As an IDE Microsoft Visual Studio, with an "Console App" Project started as a new Project. Programming Language C#, .net6 Version. Within this project there was x classes created (later removed and reorganized them). The Project also includes a second "new Project" created was a "NUnit Test Project" for the Unit Tests within the project. 
 
 ### Overall there are five SubProjects and 1 MainProject:
 
@@ -23,13 +22,13 @@ But for me it was more important that the project runs. [MUST HAVES should be in
 - Does not use an HTTP helper framework {NO, indeed not.}
 - Uses a Postgres Database for storing data {Yes, I use a docker container, where whenever the commands [docker start swe1db] [docker exec -it swe1db bash] [psql -U swe1user] are used the 'postgres'-Container runs. Postgres DB is connected and included in the project (Npgsql as a package in the Subprojcet.DA) for visual purpose I used DBeaver - named it mtcg_theorigin}
 - Does not allow for SQL injection {emmm...NO?!}
-- Does not use an OR-Mapping Library {NO, indeed not. Serialized and Desirialized with Json.Desirializer library and an Attribute [Serializable] and [JSONInclude] <- detrimming the String.}
+- Does not use an OR-Mapping Library {NO, indeed not. Serialized and Desirialized with Json.Desirializer library and an Attribute [Serializable] and [JsonInclude] <- detrimming the String.}
 - Implements at least 20 Unit Tests {t.b.a}
 
 
 #### Describes design
-unique design I guess, boxing/unboxing, classes separate from the Main Project. lambda Functions, Generics/ Dictionary used. 
-Token Based Security. 
+unique design I guess, boxing/unboxing, classes separate from the Main Project. lambda Functions, GenericTyps in form of Lists/ Dictionary used. 
+Token Based Security. DB stores after an end of an GoBattle (not after each round.) It stores just Win and Loos. 
 ### POST
 each request needs UserName and Password OR AccessToken
 ### GET
@@ -45,7 +44,7 @@ works with json file and Postman.
 trade. t.b.a
 
 #### Contains tracked time
-tracked time; in an leap year I would have needed one more day. 
+tracked time; in a leap year I would have needed one more day. 
 
 #### Contains link to GIT
 https://github.com/Johanna0815/MTCG_Johanna0815
