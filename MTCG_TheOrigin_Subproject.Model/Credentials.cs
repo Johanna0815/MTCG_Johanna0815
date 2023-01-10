@@ -11,11 +11,11 @@ namespace MTCG_TheOrigin_SubProject.Model
     public class Credentials
     {
         [JsonInclude]
-        public string username { get; set; }
+        public string UserName { get; set; }
         [JsonInclude]
-        public string password { get; set; }
+        public string Password { get; set; }
         [JsonInclude]
-        public string accessToken { get; set; }
+        public string AccessToken { get; set; }
 
     }
 }

@@ -9,7 +9,7 @@ namespace MTCG_TheOrigin_SubProject.Model
     public class Battle
     {
 
-        public UserProfile userA;
-        public UserProfile userB;
+        public UserProfile? userA;
+        public UserProfile? userB;
     }
 }

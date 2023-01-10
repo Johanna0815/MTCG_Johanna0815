@@ -10,18 +10,18 @@ namespace MTCG_TheOrigin_SubProject.Model
     public class HttpBody
     {
         [JsonInclude]
-        public int[] deck { get; set; }
+        public int[] Deck { get; set; }
         [JsonInclude]
-        public int tradeofferID { get;set; }
+        public int TradeofferID { get;set; }
         [JsonInclude]
-        public int receiverUID { get; set; }
+        public int ReceiverUID { get; set; }
         [JsonInclude]
-        public int[] i_receive { get; set; }
+        public int[] I_receive { get; set; }
         // public int[] i_transmit { get;} 
         [JsonInclude]
-        public int[] u_receive { get; set; }
+        public int[] U_receive { get; set; }
         [JsonInclude]
-        public string action { get; set; }
+        public string Action { get; set; }
 
     }
 }

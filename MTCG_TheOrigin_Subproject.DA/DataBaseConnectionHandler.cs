@@ -16,10 +16,10 @@ namespace MTCG_TheOrigin_Subproject.DA
         public static async Task<string> Register(string username, string password)
         {
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore"); 
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // swe1db ? 
            // con.Open(); // pq
             db.Register(username, password, con);
-            return "{\"msg\": \"Login successfull!\", \"success\": true}";
+            return "{\"MSG\": \"Login successfull!\", \"Success\": true}";
         }
 
         
@@ -27,7 +27,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         public static async Task<string> Login(string username = "", string password = "", string accessToken = "")
         {
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore"); // simpledatastroe - weg!
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // simpledatastroe - weg!
                                                                                                          // 
 
             if (accessToken != null)
@@ -36,7 +36,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 bool isProofed = await db.ProofToken(accessToken, cmd);
                 if (isProofed == true)
                 {
-                    return "{\"msg\": \"Login successfull!\", \"success\": true}";
+                    return "{\"MSG\": \"Login successfull!\", \"Success\": true}";
                     // if isProofed 
                 }
                 // is false
@@ -57,15 +57,15 @@ namespace MTCG_TheOrigin_Subproject.DA
             {
                 string LoginResponse = await Login(username, password, accessToken);
                 ResponseJson json = JsonSerializer.Deserialize<ResponseJson>(LoginResponse); 
-                if(json.success == true)
+                if(json.Success == true)
                 {
                     DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore");
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
                     var cmd = new NpgsqlCommand("", con);
 
 
                     // buyPack
-                    var CoinStat = await db.NewPack(json.uid, cmd);
+                    var CoinStat = await db.NewPack(json.UID, cmd);
                     //get card ids
                     var cardIdArray = await db.GetRandom(cmd);
                     // put tu user
@@ -74,11 +74,11 @@ namespace MTCG_TheOrigin_Subproject.DA
                     List<Card> CardList = await db.GenerateCardList(cardIdArray, cmd);
                     string response = JsonSerializer.Serialize<List<Card>>(CardList);
 
-                    return $"{{\"msg\": \"Pack opened successful.\", \"success\": true, \"coins\": {CoinStat}, \"data\": {response}}}";
+                    return $"{{\"MSG\": \"Pack opened successful.\", \"Success\": true, \"Coins\": {CoinStat}, \"Data\": {response}}}";
 
                 }
             }
-            return "{\"msg\": \"To purchase Pack failed!\", \"success\": false}";
+            return "{\"MSG\": \"To purchase Pack failed!\", \"Success\": false}";
         }
 
 
@@ -90,26 +90,53 @@ namespace MTCG_TheOrigin_Subproject.DA
 
                 string LoginResponse = await Login(username, password);
                 ResponseJson json = JsonSerializer.Deserialize<ResponseJson>(LoginResponse);
-                if(json.success == true)
+                if(json.Success == true)
                 {
                     DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "swe1pw", "simpledatastore");
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
                     var cmd = new NpgsqlCommand("", con);
                     var accessToken = await db.GetAccessToken(username, password, cmd);
 
-                    return $"{{\"msg\": \"AccessToken successful in use.\", \"success:\": true, \"data\": {accessToken}}}";
+                    return $"{{\"MSG\": \"AccessToken successful in use.\", \"Success:\": true, \"Data\": {accessToken}}}";
                 }
-                return $"{{\"msg\": \"Authentication failed\", \"success\": false}}";
+                return $"{{\"MSG\": \"Authentication failed\", \"Success\": false}}";
             }
-            return $"{{\"msg\": \"Authentication failed\", \"success\": false}}";
+            return $"{{\"MSG\": \"Authentication failed\", \"Success\": false}}";
         }
-            
 
-          
+
+
+        public static async Task<string> SetDeck(int[] deck, string username = "", string password = "", string accessToken = "") // bug { { } }
+        {
+            if (username != null && password != null || accessToken != null)
+            {
+                string LoginResponse = await Login(username, password, accessToken);
+                ResponseJson json = JsonSerializer.Deserialize<ResponseJson>(LoginResponse);
+                if (json.Success == true)
+                {
+                    DataBaseConnection db = new DataBaseConnection();
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
+                    var cmd = new NpgsqlCommand("", con);
+
+                    UserProfile userP = new UserProfile();
+                    userP.Deck = deck;
+                    int[] checkedDeck = await db.SetDeck(json.UID, userP, cmd);
+
+                    return $"{{\"MSG\": \"The deck has been successfully configured\", \"Success\": true, \"Data\": {checkedDeck.ToString()}}}";
+
+                    //var accessToken = await db.GetAccessToken(username, password, cmd);
+
+                }
+            }
+            return $"{{\"MSG\": \"he provided deck did not include the required amount of cards\", \"Success\": false, \"Deck\": []}}";
+        }
+
+
 
 
         
-
+        // goBattle
+        // generateTradeOffer
 
 
     }

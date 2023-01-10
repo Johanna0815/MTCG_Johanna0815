@@ -10,13 +10,13 @@ namespace MTCG_TheOrigin_SubProject.Model
     public class ResponseJson
     {
         [JsonInclude]
-        public string msg { get; set; }
+        public string MSG { get; set; }
         [JsonInclude]
-        public bool success { get; set;}
+        public bool Success { get; set;}
         [JsonInclude]
-        public int uid { get; set; }
+        public int UID { get; set; }
         [JsonInclude]
-        public string accessToken { get; set; }
+        public string AccessToken { get; set; }
 
       //  public int status { get; set; }
 
