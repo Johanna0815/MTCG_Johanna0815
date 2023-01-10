@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic;
-using MTCG_TheOrigin;
+using MTCG_TheOrigin_SubProject;
+using MTCG_TheOrigin_SubProject.DA;
 using MTCG_TheOrigin_SubProject.Model;
 using Npgsql;
 using System;
@@ -147,7 +148,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
                 {
-                    uid = (int)reader.GetInt32("UID"); // try ?!
+                    uid = (int)reader["UID"]; 
                     accessToken = (string)reader["AccessToken"];
                     due_date = reader["due_date"].ToString(); // att: converting null literal or possibel null val to non_null
                     return $"{{\"MSG\":\"Login successfull!\", \"UID\":{uid}, \"AccessToken\": \"{accessToken}\", \"Success\": true}}";
@@ -201,14 +202,25 @@ namespace MTCG_TheOrigin_Subproject.DA
             }
         }
 
-
+        //ohne passwort!
+        public async Task<int> GetAccessToken(string username, NpgsqlCommand cmd)
+        {
+            int uid = await GetUserIDByusername(username, cmd);
+            cmd.CommandText = $"SELECT Coins FROM Balances WHERE UID = @UID";
+            cmd.Parameters.AddWithValue("UID", uid);
+            cmd.Prepare();
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
+                    return reader.GetInt32(0);
+            return 0;
+        }
 
 
         public async Task<string> GetAccessToken(string username, string password, NpgsqlCommand cmd)
         {
             cmd.CommandText = $"SELECT act.AccessToken FROM users AS u JSON AccessTokens AS act ON u.UID WHERE u.UserName = @UserName AND u.Password = @Password";
             cmd.Parameters.AddWithValue("UserName", username);
-            cmd.Parameters.AddWithValue("UserName", password);
+            cmd.Parameters.AddWithValue("Password", password);
             cmd.Prepare();
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
@@ -229,7 +241,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
-        //jeder user sollte mit 20 starten können.
+        //each user should start with 20 coins.
         public void SetUsersBalance(int UId, NpgsqlCommand cmd)
         {
             lock (commandlock)
@@ -243,42 +255,11 @@ namespace MTCG_TheOrigin_Subproject.DA
             }
         }
 
-        //public void SetAccessToken(int uid, string username, string password, NpgsqlCommand cmd)
-        //{
-        //    lock (commandlock)
-        //    {
-
-        //        cmd.CommandText = $"INSERT INTO accessTokens(uid, accessToken, dueDate) VALUES(@uid, 'ddmmyyy')";
-        //        cmd.Parameters.AddWithValue("uid", uid);
-        //        cmd.Prepare();
-        //        cmd.ExecuteNonQueryAsync();
-        //        //cmd.CommandText = $"SELECT act.accessToken FROM users AS u JSON accessTokens AS act ON u.uid WHERE u.username = @username AND u.password = @password";
-        //        //cmd.Parameters.AddWithValue("username", username);
-        //        //cmd.Parameters.AddWithValue("username", password);
-        //        //cmd.Prepare();
-        //        //await using (var reader = await cmd.ExecuteReaderAsync())
-        //        //    while (await reader.ReadAsync())
-        //        //    {
-        //        //        return (string)reader["accessToken"];
-
-        //        //    }
-        //    }
-        //}
+      
 
 
 
-        //ohne passwort!
-        public async Task<int> GetAccessToken(string username, NpgsqlCommand cmd)
-        {
-            int uid = await GetUserIDByusername(username, cmd);
-            cmd.CommandText = $"SELECT Coins FROM Balances WHERE UID = @UID";
-            cmd.Parameters.AddWithValue("UID", uid);
-            cmd.Prepare();
-            await using (var reader = await cmd.ExecuteReaderAsync())
-                while (await reader.ReadAsync())
-                    return reader.GetInt32(0);
-            return 0;
-        }
+     
 
 
         public async Task<int> GetCoinsByUserID(int uid, NpgsqlCommand cmd)
@@ -356,8 +337,8 @@ namespace MTCG_TheOrigin_Subproject.DA
 
 
 
-        // bug vom hier int[] pq
-        public void CardToUser(int UID, int[] cardIdArray, NpgsqlCommand cmd) // user UID class user 
+        
+        public void CardToUser(int UID, int[] cardIdArray, NpgsqlCommand cmd)  
         {
 
             lock (commandlock)
@@ -491,7 +472,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         {
             lock (commandlock)
             {
-                cmd.CommandText = "UPDATE Balances SET Coins = Coins + @Value WHERE UID = @UID"; // hier VALUE ?
+                cmd.CommandText = "UPDATE Balances SET Coins = Coins + @Value WHERE UID = @UID"; 
                 cmd.Parameters.AddWithValue("UID", UID); // Elo
                 cmd.Parameters.AddWithValue("Value", value); // Win.
                 cmd.Prepare();
@@ -508,7 +489,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             await IfNotExistCreateUserProfile(UID, cmd);
             if (ToCheckForDuplicates(user.Deck) == false)
             {
-                bool IfUserHasCard = await ToCheckUserHasCards(UID, user.Deck, cmd); // BUG
+                bool IfUserHasCard = await ToCheckUserHasCards( user.Deck, UID, cmd); // BUG
                 if (IfUserHasCard == true)
                 {
                     lock (commandlock)
@@ -706,7 +687,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         {
             if (Queue.UserWaitInQueue.Count >= 2)
             {
-                MTCG_TheOrigin_SubProject.BL.BattleLogic battle = new MTCG_TheOrigin_SubProject.BL.BattleLogic();   //  BattleLogic // BUG PROBLEM mit einbinden. in using schon drin!
+                BattleLogic battle = new BattleLogic();   //  BattleLogic // BUG PROBLEM mit einbinden. in using schon drin!
                 Battle round = new Battle(); // add User to Battle
                 round.userA = Queue.UserWaitInQueue[0];
                 round.userB = Queue.UserWaitInQueue[1];

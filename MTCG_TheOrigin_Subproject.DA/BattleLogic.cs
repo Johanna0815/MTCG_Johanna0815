@@ -1,4 +1,4 @@
-﻿using MTCG_TheOrigin;
+﻿
 using MTCG_TheOrigin_Subproject.DA;
 using MTCG_TheOrigin_SubProject.Model;
 using Npgsql;
@@ -10,7 +10,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG_TheOrigin_SubProject.BL
+namespace MTCG_TheOrigin_SubProject.DA
 {
     public class BattleLogic
     {
@@ -247,7 +247,7 @@ namespace MTCG_TheOrigin_SubProject.BL
 
 
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1db", "pw1db", "db"); // db erst auf table !!!
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // db erst auf table !!!
             var cmd = new NpgsqlCommand("", con);
             cmd.CommandText = "SELECT * FROM CardDeck";
             await using(var reader = await cmd.ExecuteReaderAsync())

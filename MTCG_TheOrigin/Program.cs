@@ -1,5 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using MTCG_TheOrigin;
+
 using MTCG_TheOrigin_Subproject.DA;
 using MTCG_TheOrigin_SubProject.Model;
 using System.Net;
@@ -35,7 +35,7 @@ public class Program
         int port = 10001;
         if (tcpListener_ == null) tcpListener_ = new TcpListener(IPAddress.Any, port);
         tcpListener_.Start();
-        Console.WriteLine("Welcome to MTCG" );
+        Console.WriteLine("Welcome to MTCG." );
         
         while(true)
         {
@@ -159,7 +159,7 @@ public class Program
                 response = await DataBaseConnectionHandler.NewPack(username: body.UserName, password: body.Password, accessToken: body.AccessToken);
                 break;
             case "/setDeck":
-                response = await DataBaseConnectionHandler.SetDeck(request.Deck, username: body.UserName, password: body.Password, accessToken: body.AccessToken);
+                response = await DataBaseConnectionHandler.SetDeck(deck: request.Deck, username: body.UserName, password: body.Password, accessToken: body.AccessToken);
                 break;
                 // "/goBattle
                 // response = await DataBaseConnectionHandler.

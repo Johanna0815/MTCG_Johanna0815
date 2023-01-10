@@ -6,7 +6,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTCG_TheOrigin
+namespace MTCG_TheOrigin_SubProject.Model
 {
     public class Card
     {

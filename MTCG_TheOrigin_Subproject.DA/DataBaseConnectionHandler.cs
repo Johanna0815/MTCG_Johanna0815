@@ -1,12 +1,6 @@
-﻿using MTCG_TheOrigin;
-using MTCG_TheOrigin_SubProject.Model;
+﻿using MTCG_TheOrigin_SubProject.Model;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace MTCG_TheOrigin_Subproject.DA
 {
