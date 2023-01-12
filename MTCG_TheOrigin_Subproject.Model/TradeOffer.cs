@@ -10,8 +10,8 @@ namespace MTCG_TheOrigin_SubProject.Model
     public class TradeOffer
     {
 
-        public int TradeOfferID { get; set; }
-        public int Sender_uid { get; set; }
+        public int TradeofferID { get; set; }
+        public int SenderUID { get; set; }
         public int ReceiverUID { get; set; }
 
         public int[] A_receive { get; set; }

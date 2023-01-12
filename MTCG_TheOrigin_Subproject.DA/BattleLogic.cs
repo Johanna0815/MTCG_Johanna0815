@@ -24,22 +24,23 @@ namespace MTCG_TheOrigin_SubProject.DA
         public async Task<Battle> StartBattle(Battle battle)
         {
 
-           
-            battle.userA.Deck = ShuffleDeck(battle.userA.Deck);
-            battle.userB.Deck = ShuffleDeck(battle.userB.Deck   );
 
+            battle.userA.Deck = ShuffleDeck(battle.userA.Deck);
+            battle.userB.Deck = ShuffleDeck(battle.userB.Deck);
+
+            // to start the battle
             battle = await BattleGo(battle);
 
             return battle;
         }
 
-        
+
 
         async Task<Battle> BattleGo(Battle battle)
         {
 
-            int[]   deckA = battle.userA.Deck;
-            int[]   deckB = battle.userB.Deck;
+            int[] deckA = battle.userA.Deck;
+            int[] deckB = battle.userB.Deck;
 
             var cardDeck = await GetCardDeck();
             // cast array of ints into List of cards with info of cardType{damage...}
@@ -50,82 +51,133 @@ namespace MTCG_TheOrigin_SubProject.DA
             deB.DeckCards = GetLookAtCardDeck(deckB, cardDeck);
 
             // if player has cards GOBattle
-            int round = 0;
+            int round = 1;
             bool goBattle = true;
-           // Console.WriteLine(deckB);            
-            while(goBattle )
+            // Console.WriteLine(deckB);            
+            while (goBattle)
             {
                 if (round <= 100)
                 {
-                    Console.WriteLine();
+                    Console.WriteLine("1..2...3..Let\"'s " + "go{0}", round);  // test
+
+
+                    if (deA.DeckCards.Count > 0 && deB.DeckCards.Count > 0)
+                    {
+
+
+
+                        int WinnerOfRound = (int)BattleWithTwoCards(deA.DeckCards[0], deB.DeckCards[0]); // BUG. 
+
+                        // draw
+                        if (WinnerOfRound == 0)
+                        {
+                            Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE EQUALS {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
+                            Console.WriteLine("It´s a DRAW.");
+
+
+                            deA.DeckCards.RemoveAt(0);
+                            deB.DeckCards.RemoveAt(0);
+
+                            // deckkarten anziegen danach !
+                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+
+                        }
+
+                        // win
+                        // case userA wins. Remove card from deckB
+                        if (WinnerOfRound == 1)
+                        {
+
+                            Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE DESTROYED {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
+                            Console.WriteLine($"{battle.userA.UserName} Winner of the ROUND.");
+
+                            deA.DeckCards.Add(deB.DeckCards[0]);
+                            deB.DeckCards.RemoveAt(0);
+
+                            // deckkarten anziegen danach !
+                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                        }
+                        // win
+                        // case UserB wins. Remove card from DeckA
+                        if (WinnerOfRound == 2)
+                        {
+
+                            Console.WriteLine($"{deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE DESTROYED {deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE");
+                            Console.WriteLine($"{battle.userB.UserName} Winner of the ROUND.");
+
+                            deB.DeckCards.Add(deA.DeckCards[0]);
+                            deA.DeckCards.RemoveAt(0);
+                            // deckkarten anziegen danach !
+                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
+                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                        }
+
+                        // next rounds. 
+                        round++;
+                    }
+                    else
+                    {
 
                     
-
-                    int WinnerOfRound = (int)BattleWithTwoCards(deA.DeckCards[0], deB.DeckCards[0]);
-
-                    // draw
-                    if (WinnerOfRound == 0)
+                    DataBaseConnection db = new DataBaseConnection();
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
+                    var cmd = new NpgsqlCommand("", con);
+                    // case userA has no cards and userB has no cards
+                    if (deA.DeckCards.Count == 0 && deB.DeckCards.Count == 0)
                     {
-                        Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE EQUALS {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
-                        Console.WriteLine("It´s a DRAW.");
+                        Console.WriteLine();
 
+                        battle.userA.Draw++; // bug draw no cards moved
+                        battle.userB.Draw++;
 
-                        deA.DeckCards.RemoveAt(0);
-                        deB.DeckCards.RemoveAt(0);
-
-                        // deckkarten anziegen danach !
-                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
-
+                        goBattle = false;
                     }
-                    // win
-                    // case userA wins. Remove card from deckB
-                    if (WinnerOfRound == 1)
+                    // winner a
+                    if (deB.DeckCards.Count == 0 && deA.DeckCards.Count > 0)
                     {
+                        Console.WriteLine($"{battle.userA.UserName} winner of the Game in {round} round. ");
+                        battle.userA.Win++;
+                        battle.userB.Loos++;
 
-                        Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE DESTROYED {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
-                        Console.WriteLine($"{battle.userA.UserName} Winner of the ROUND.");
+                        battle.userA.Elo += 20;
+                        battle.userB.Elo -= 15;
 
-                        deA.DeckCards.Add(deB.DeckCards[0]);
-                        deB.DeckCards.RemoveAt(0);
+                        // test so far.
 
-                        // deckkarten anziegen danach !
-                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                        goBattle = false;
                     }
-                     // win
-                    // case UserB wins. Remove card from DeckA
-                    if (WinnerOfRound == 2)
+                    // winner b
+                    if (deA.DeckCards.Count == 0 && deB.DeckCards.Count == 0)
                     {
+                            Console.WriteLine($"{battle.userB.UserName} winner of the Game in {round} round. ");
+                            battle.userB.Win++;
+                            battle.userA.Loos++;
 
-                        Console.WriteLine($"{deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE DESTROYED {deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE");
-                        Console.WriteLine($"{battle.userB.UserName} Winner of the ROUND.");
+                            battle.userB.Elo += 20;
+                            battle.userA.Elo -= 15;
 
+                            // test so far.
 
-                        // deckkarten anziegen danach !
-                        Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                        Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                            goBattle = false;
                     }
 
-
-                  
-                    // next rounds. 
-                    round++;
 
                 }
 
-                // loos
-                // TODO 
+                 }
+                else
+                {
+                    Console.WriteLine("The End of Game. Reached 100 rounds !"); // 
+                    battle.userA.Draw++;
+                    battle.userB.Draw++;
+                    goBattle = false;
 
-            }
+                }
+            }                   
             return battle;
         }
-
-
-
-        // calculate damage 
-        // ElementType
-
 
         // multiplicates the damage
         public decimal DaamageCalculator(Card cardA, Card cardB)
@@ -153,9 +205,9 @@ namespace MTCG_TheOrigin_SubProject.DA
                             case "water":
                                 return 0.5m;
                             case "normal":
-                                return 1;
-                            case "fire":
                                 return 2;
+                            case "fire":
+                                return 1;
                         }
                         break;
                     // normal
@@ -184,18 +236,13 @@ namespace MTCG_TheOrigin_SubProject.DA
 
         public decimal BattleWithTwoCards(Card cardA, Card cardB)
         {
-
-            // can be monster
-            // can be spellCard.
-            // The element type does not effect pure monster fights.
-
-            // in this case monster must be involved. // and no monster and speLL?// elementType no effect
+         // in this case monster must be involved. // and no monster and speLL?// elementType no effect
             if (cardA.CardType == "monster" && cardB.CardType == "monster")
             {
                 // Card.Damage : cardA.Damage > cardB.Damage return 1 ? ReturnTypeEncoder 2;
-                   if(cardA.Damage > cardB.Damage) return 1;
+                if(cardA.Damage > cardB.Damage) return 1;
                 if (cardA.Damage < cardB.Damage) return 2;
-                if(cardA.Damage == cardB.Damage) return 3; // cardA not null here BUG. // bug im damage
+                if(cardA.Damage == cardB.Damage) return 0; // bug im damage
 
 
                 // 
@@ -245,9 +292,8 @@ namespace MTCG_TheOrigin_SubProject.DA
             CardDeck.AllCards.Clear(); // keine mehr
                                        // DatabaseGeneratedOption
 
-
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // db erst auf table !!!
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI"); // db erst auf table !!!
             var cmd = new NpgsqlCommand("", con);
             cmd.CommandText = "SELECT * FROM CardDeck";
             await using(var reader = await cmd.ExecuteReaderAsync())
@@ -276,7 +322,7 @@ namespace MTCG_TheOrigin_SubProject.DA
         int[] ShuffleDeck(int[] deck)
         {
             Random random = new Random();
-            deck = deck.OrderBy(x => x).ToArray();   // pivot aufs next ?.
+            deck = deck.OrderBy(x => random.Next()).ToArray();  
             return deck;
         }
 

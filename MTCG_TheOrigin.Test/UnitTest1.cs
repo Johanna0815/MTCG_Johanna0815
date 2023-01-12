@@ -38,7 +38,7 @@
 //        {
 //            DataBaseConnection db = new DataBaseConnection();
 //            int[] deck = new int[4] { 5, 5, 32, 12 }; // Duplicate inside
-//            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");// username swe1db oder postgres abchecken.
+//            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");//  username checked abchecken.
 //            var cmd = new NpgsqlCommand("", con);
 //            bool result = db.CheckForSecond(deck); // dependency BUG!! 
 //            Assert.True(result);
@@ -46,7 +46,7 @@
 //        }
 
 //        [Test]
-//        public async void CheckIfUserHasCards_IfUserHasCardsReturnTrue()
+//        public async bool CheckIfUserHasCards_IfUserHasCardsReturnTrue()
 //        {
 //            DataBaseConnection db = new DataBaseConnection();
 //            int[] deck = new int[4] { 5, 12, 32, 1 }; // no Duplicate 

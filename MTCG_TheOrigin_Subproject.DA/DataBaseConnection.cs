@@ -55,7 +55,7 @@ namespace MTCG_TheOrigin_Subproject.DA
 
                 lock (commandlock)
                 {
-                    uid = GetUserIDByusername(username, cmd).Result;
+                    uid = GetUserIDByusername(username, cmd).Result; // aggregateException is used to consolidate multiple failures into a single, throwable exception object. 
 
                 }
 
@@ -140,10 +140,10 @@ namespace MTCG_TheOrigin_Subproject.DA
             int uid;
             string accessToken;
             string due_date;
-            var cmd = new NpgsqlCommand($"SELECT u.UID, u.UserName, act.AccessToken, act.due_date FROM users AS u JOIN AccessTokens AS act ON u.uid = act.UID WHERE u.UserName = @UserName AND u.Password = @Password", con);
+            var cmd = new NpgsqlCommand($"SELECT u.UID, u.UserName, act.AccessToken, act.due_date FROM users AS u JOIN AccessTokens AS act ON u.UID = act.UID WHERE u.UserName = @UserName AND u.Password = @Password", con);
             //cmd.Parameters.AddRange
             cmd.Parameters.AddWithValue("UserName", username);
-            cmd.Parameters.AddWithValue("UserName", password);
+            cmd.Parameters.AddWithValue("Password", password);
             cmd.Prepare();
             await using (var reader = await cmd.ExecuteReaderAsync())
                 while (await reader.ReadAsync())
@@ -194,7 +194,7 @@ namespace MTCG_TheOrigin_Subproject.DA
             lock (commandlock)
             {
                 string hash = GetStringSHA256(UId + username + password);
-                cmd.CommandText = $"INSERT INTO AccessToken(UID, AccessToken, due_date) VALUES(@UID, @Hash, '2023-12-05')";
+                cmd.CommandText = $"INSERT INTO AccessTokens(UID, AccessToken, due_date) VALUES(@UID, @Hash, '2023-12-05')";
                 cmd.Parameters.AddWithValue("UID", UId);
                 cmd.Parameters.AddWithValue("Hash", hash);
                 cmd.Prepare();
@@ -592,7 +592,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         //ToCheckUserHasCards
         public async Task<bool> ToCheckUserHasCards(int[] cd, int UID, NpgsqlCommand cmd)
         {
-            cmd.CommandText = "SELECT CId FROM Collections WHERE UID =@UID AND CId IN (@1, @2, @3, @4, @5) ";
+            cmd.CommandText = "SELECT CId FROM Collections WHERE UID =@UID AND CId IN (@CId1, @CId2, @CId3, @CId4, @CId5) ";
             cmd.Parameters.AddWithValue("UID", UID);
             for (int i = 0; i < cd.Length; i++)
             {
@@ -712,8 +712,8 @@ namespace MTCG_TheOrigin_Subproject.DA
             using (var sha = new SHA256Managed())
             {
                 byte[] textD = System.Text.Encoding.UTF8.GetBytes(text);
-                byte[] hash = sha.ComputeHash(textD);
-                return BitConverter.ToString(hash).Replace("-", String.Empty);
+                byte[] Hash = sha.ComputeHash(textD);
+                return BitConverter.ToString(Hash).Replace("-", String.Empty);
             }
         }
 

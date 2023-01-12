@@ -12,7 +12,6 @@ using System.Net.Security;
 using System.Text;
 using System.Text.Json;
 
-//Console.WriteLine("Hello, World! Origin Main");
 
 public class Program
 {
@@ -65,7 +64,7 @@ public class Program
                                 //GCCollectionMode
                                 //global::System.Console.WriteLine(line);
                                 Console.WriteLine(line);
-                                FirstLine = line;
+                                FirstLine = line;               // NULLException !
                                 bool bodyContent = false;
                                 requestType = FirstLine.Split(' ')[0];// reader.ReadLine();
                                 query = FirstLine.Split(' ')[1];
@@ -107,22 +106,32 @@ public class Program
 
 
                                     {response}";
-                                    byte[] bytesSend = System.Text.Encoding.ASCII.GetBytes(rs);//new byte[1];
+                                    byte[] bytesSend = Encoding.ASCII.GetBytes(rs);//new byte[1];
                                     newservice.Write(bytesSend, 0, bytesSend.Length);
                                     break;
 
-                                    // case "get":
+                                // case "get":
+                                case "get":
+                                    string GETresponse = await GET(query, jsonBody);
+                                    Console.WriteLine("Response: " + GETresponse);
+                                    string GETrs =
+                                    @$"HTTP/1.1 200 OK
+                                    Last-Modified: 07.01.2023
+                                    Content-Length:
+                                    Content-Type: application/json
+                                    Connection: Closed
+
+
+                                    {GETresponse}";
+                                    byte[] bytesSend_GET = Encoding.ASCII.GetBytes(GETrs);
+                                    newservice.Write(bytesSend_GET, 0, bytesSend_GET.Length);
+                                    break;
 
                             }
 
 
 
                         }
-
-
-
-
-
                     }
                     clientA?.Close(); // possible null 
 

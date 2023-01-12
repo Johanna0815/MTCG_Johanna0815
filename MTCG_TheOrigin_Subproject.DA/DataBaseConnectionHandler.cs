@@ -10,9 +10,9 @@ namespace MTCG_TheOrigin_Subproject.DA
         public static async Task<string> Register(string username, string password)
         {
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // swe1db ? 
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI"); // swe1db ? 
            // con.Open(); // pq
-            db.Register(username, password, con);
+            db.Register(username, password, con); // db change !
             return "{\"MSG\": \"Login successfull!\", \"Success\": true}";
         }
 
@@ -21,7 +21,7 @@ namespace MTCG_TheOrigin_Subproject.DA
         public static async Task<string> Login(string username = "", string password = "", string accessToken = "")
         {
             DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin"); // simpledatastroe - weg!
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI"); // simpledatastroe - weg!
                                                                                                          // 
 
             if (accessToken != null)
@@ -54,7 +54,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 if(json.Success == true)
                 {
                     DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
                     var cmd = new NpgsqlCommand("", con);
 
 
@@ -87,7 +87,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 if(json.Success == true)
                 {
                     DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
                     var cmd = new NpgsqlCommand("", con);
                     var accessToken = await db.GetAccessToken(username, password, cmd);
 
@@ -109,7 +109,7 @@ namespace MTCG_TheOrigin_Subproject.DA
                 if (json.Success == true)
                 {
                     DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theorigin");
+                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
                     var cmd = new NpgsqlCommand("", con);
 
                     UserProfile userP = new UserProfile();
