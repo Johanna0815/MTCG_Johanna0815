@@ -28,20 +28,20 @@ But for me it was more important that the project runs. [MUST HAVES should be in
 
 #### Describes design
 unique design I guess, boxing/unboxing, classes separate from the Main Project. lambda Functions, GenericTyps in form of Lists/ Dictionary used. 
-Token Based Security. DB stores after an end of an GoBattle (not after each round.) It stores just Win and Loos. 
+Token Based Security. DB stores after an end of an GoBattle (not after each round.) It stores just Win and Loos. After the user registers, it gets an uid, increments by each new user, when 2 users have set an Deck, (each 4 cars) the can go for a batttle, in the meantime all others would have waited in a Queue. After finishing the battle, the DB has the entry of win and loos. 
 ### POST
 each request needs UserName and Password OR AccessToken
 ### GET
 each request needs UserName and Password OR AccessToken
 #### Describes lessons learned
-t.b.a
+lessons learned. eamm Http Protocol, enpoints, WebserverLifeCircle, C# async Tasks, using an own created Webserver. 
 
 #### Describes unit testing decisions
-Tests separate with NUnit.Framework
+Tests separate with NUnit.Framework; XUnit. 
 works with json file and Postman. 
 
 #### Describes unique feature
-trade. t.b.a
+mandatory feature, after the winner has a win, it gets 2 coins. 
 
 #### Contains tracked time
 tracked time; in a leap year I would have needed one more day. 
