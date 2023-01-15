@@ -23,7 +23,7 @@ But for me it was more important that the project runs. [MUST HAVES should be in
 - Uses a Postgres Database for storing data {Yes, I use a docker container(image: postgres), where whenever the commands [docker start swe1db] [docker exec -it swe1db bash] [psql -U swe1user] are used the 'postgres'-Container runs. Postgres DB is connected and included in the project (Npgsql as a package in the Subprojcet.DA) for visual purpose I used DBeaver - named it mtcg_theorigin; then I switched to pgAdmin4 name of DB is mtcg_theOriginI, Why so? FUnfact: I forgot to reschedule the Port so firstly it did not work out with 2DB, but after sitching+ different POrt it worked.}
 - Does not allow for SQL injection {emmm...NO?!}
 - Does not use an OR-Mapping Library {NO, indeed not. Serialized and Desirialized with JsonSerializer.Deserialize||Serialize library[using System.Text.Json] and an Attributes [Serializable], [JsonInclude] <- detrimming the String.}
-- Implements at least 20 Unit Tests 
+- Implements at least 20 Unit Tests {a custom app, that works in an automated way (XUnit)}
 
 
 #### Describes design
@@ -36,17 +36,13 @@ each request needs UserName and Password OR AccessToken
 #### Describes lessons learned
 lessons learned. eamm Http Protocol, enpoints, WebserverLifeCircle, C# async Tasks, using an own created Webserver. 
 NEVER delete Block of Code, before pulling/pushing/commiting to GitHuB. {I just use one of the TestProjects, but nearly all packages are in the other one; I deleted, But regreted it just a view moment afterwards, bc all tests failed, when I removed. So i just fixed it picking from github again, ..}
-![image](https://user-images.githubusercontent.com/81578777/212503178-b154e6a1-7142-483c-b2e4-826200dad956.png)
-
-
-
 
 #### Describes unit testing decisions
-Tests separate with NUnit.Framework; XUnit. StepByStep as Curl would do it like Integration Tests.
-works with json file and Postman. 
+Tests separate with NUnit.Framework; XUnit. StepByStep as like Curl would do it like Integration Tests.
+works with json file and Postman(could run it, but it would not battle, because, there need to be 2 players added that for.). 
 
 #### Describes unique feature
-mandatory feature, after the winner has a win, it gets 2 coins. 
+mandatory feature, after the winner has a win, it gets 2 coins. {Method thatfor is called 'AddCoins'}
 
 #### Contains tracked time
 tracked time; in a leap year I would have needed one more day. 
