@@ -8,14 +8,13 @@ namespace MTCG_TheOrigin_SubProject.Model
 {
     public class UserProfile
     {
-        public int UID { get; set; } = 0;
-        public string UserName { get; set; }
-
-        public int Elo { get; set; } = 100;
-        public int[] Deck { get; set; } = new int[4];
-        public int Win { get; set; } = 0;
-        public int Loos { get; set; } = 0;
-        public int Draw { get; set; } = 0;
+        public int uid { get; set; } = 0;
+        public string username { get; set; }
+        public int elo { get; set; } = 100;
+        public int[] deck { get; set; } = new int[4];
+        public int win { get; set; } = 0;
+        public int loos { get; set; } = 0;
+        public int draw { get; set; } = 0;
 
     }
 }

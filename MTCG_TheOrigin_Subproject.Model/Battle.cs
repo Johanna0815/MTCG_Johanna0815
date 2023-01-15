@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MTCG_TheOrigin_SubProject.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,7 @@ namespace MTCG_TheOrigin_SubProject.Model
 {
     public class Battle
     {
-
-        public UserProfile? userA;
-        public UserProfile? userB;
+        public UserProfile userA;
+        public UserProfile userB;
     }
 }

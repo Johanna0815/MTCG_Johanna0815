@@ -1,4 +1,4 @@
-﻿
+﻿using MTCG_TheOrigin_SubProject.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,6 @@ namespace MTCG_TheOrigin_SubProject.Model
 {
     public class CardDeck
     {
-
         public static List<Card> AllCards = new List<Card>();
         public List<Card> DeckCards = new List<Card>();
     }

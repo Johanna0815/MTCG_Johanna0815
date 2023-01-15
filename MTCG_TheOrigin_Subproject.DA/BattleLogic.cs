@@ -1,320 +1,280 @@
-﻿
-using MTCG_TheOrigin_Subproject.DA;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MTCG_TheOrigin_SubProject.Model;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MTCG_TheOrigin_SubProject.DA
+namespace MTCG_TheOrigin_Subproject.DA
 {
     public class BattleLogic
     {
-
-        /// <summary>
-        /// to get card for each user
-        /// to shuffle decks. 
-        /// </summary>
-        /// <param name="battle"></param>
-        /// <returns></returns>
-        public async Task<Battle> StartBattle(Battle battle)
+        public async Task<Battle> GoBattle(Battle battle)
         {
-
-
-            battle.userA.Deck = ShuffleDeck(battle.userA.Deck);
-            battle.userB.Deck = ShuffleDeck(battle.userB.Deck);
-
-            // to start the battle
-            battle = await BattleGo(battle);
+            // FETCH CARDDECK
+            // GetCardDeck();
+            // SHUFFLE the DECKS
+            battle.userA.deck = ShuffleDeck(battle.userA.deck);
+            battle.userB.deck = ShuffleDeck(battle.userB.deck);
+            // START BATTLE
+            battle = await BattleStarted(battle);
 
             return battle;
         }
-
-
-
-        async Task<Battle> BattleGo(Battle battle)
+        async Task<Battle> BattleStarted(Battle battle)
         {
+            // EXTRACT DECKS
+            int[] deckA = battle.userA.deck;
+            int[] deckB = battle.userB.deck;
 
-            int[] deckA = battle.userA.Deck;
-            int[] deckB = battle.userB.Deck;
+            var CD = await GetCardDeck();
 
-            var cardDeck = await GetCardDeck();
-            // cast array of ints into List of cards with info of cardType{damage...}
+
+
+            // cast array of ints into List of cards with info of cardType{damage...} ...
             CardDeck deA = new CardDeck();
             CardDeck deB = new CardDeck();
+            deA.DeckCards = GetLookAtCardDeck(deckA, CD);
+            deB.DeckCards = GetLookAtCardDeck(deckB, CD);
 
-            deA.DeckCards = GetLookAtCardDeck(deckA, cardDeck); // BUG is not null ?
-            deB.DeckCards = GetLookAtCardDeck(deckB, cardDeck);
-
-            // if player has cards GOBattle
+            // go batteln
             int round = 1;
-            bool goBattle = true;
-            // Console.WriteLine(deckB);            
-            while (goBattle)
+            bool roundGo = true;
+           
+            while (roundGo)
             {
                 if (round <= 100)
                 {
-                    Console.WriteLine("1..2...3..Let\"'s " + "go{0}", round);  // test
-
+                   
+                    Console.WriteLine($"Lets start with round: {round}");
+                   
 
                     if (deA.DeckCards.Count > 0 && deB.DeckCards.Count > 0)
                     {
+                        int RoundWinner = BattleWithTwoCards(deA.DeckCards[0], deB.DeckCards[0]);
 
 
-
-                        int WinnerOfRound = (int)BattleWithTwoCards(deA.DeckCards[0], deB.DeckCards[0]); // BUG. 
-
-                        // draw
-                        if (WinnerOfRound == 0)
-                        {
-                            Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE EQUALS {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
-                            Console.WriteLine("It´s a DRAW.");
-
-
-                            deA.DeckCards.RemoveAt(0);
-                            deB.DeckCards.RemoveAt(0);
-
-                            // deckkarten anziegen danach !
-                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
-
-                        }
-
-                        // win
-                        // case userA wins. Remove card from deckB
-                        if (WinnerOfRound == 1)
+                        // IN CASE OF USERA CARD WINS: ADD DEFEATED CARD TO DECKA AND REMOVE IT FROM DECKB
+                        if (RoundWinner == 1)
                         {
 
-                            Console.WriteLine($"{deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE DESTROYED {deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE");
-                            Console.WriteLine($"{battle.userA.UserName} Winner of the ROUND.");
+                            Console.WriteLine($"{deA.DeckCards[0].card_name} with {deA.DeckCards[0].damage} {deA.DeckCards[0].element_type}-DAMAGE DEFEATS {deB.DeckCards[0].card_name} with {deB.DeckCards[0].damage} {deB.DeckCards[0].element_type}-DAMAGE");
+                            Console.WriteLine($"{battle.userA.username} WINS the Round {round}!");
 
                             deA.DeckCards.Add(deB.DeckCards[0]);
                             deB.DeckCards.RemoveAt(0);
 
-                            // deckkarten anziegen danach !
-                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                            Console.WriteLine($"{battle.userA.username} has {deA.DeckCards.Count} Cards in Deck");
+                            Console.WriteLine($"{battle.userB.username} has {deB.DeckCards.Count} Cards in Deck");
+
                         }
-                        // win
-                        // case UserB wins. Remove card from DeckA
-                        if (WinnerOfRound == 2)
+                        // IN CASE OF USERB CARD WINS: ADD DEFEATED CARD TO DECKB AND REMOVE IT FROM DECKA
+                        if (RoundWinner == 2)
                         {
 
-                            Console.WriteLine($"{deB.DeckCards[0].CardName} WITH {deB.DeckCards[0].Damage} {deB.DeckCards[0].ElementType}-DAMAGE DESTROYED {deA.DeckCards[0].CardName} WITH {deA.DeckCards[0].Damage} {deA.DeckCards[0].ElementType}-DAMAGE");
-                            Console.WriteLine($"{battle.userB.UserName} Winner of the ROUND.");
+                            Console.WriteLine($"{deB.DeckCards[0].card_name} with {deB.DeckCards[0].damage} {deB.DeckCards[0].element_type}-DAMAGE DEFEATS {deA.DeckCards[0].card_name} with {deA.DeckCards[0].damage} {deA.DeckCards[0].element_type}-DAMAGE");
+                            Console.WriteLine($"{battle.userB.username} WINS the Round {round}!");
+
 
                             deB.DeckCards.Add(deA.DeckCards[0]);
                             deA.DeckCards.RemoveAt(0);
-                            // deckkarten anziegen danach !
-                            Console.WriteLine($"{battle.userA.UserName} HAS {deA.DeckCards.Count} CARDS IN DECK");
-                            Console.WriteLine($"{battle.userB.UserName} HAS {deB.DeckCards.Count} Cards IN DECK");
+                            Console.WriteLine($"{battle.userA.username} has {deA.DeckCards.Count} Cards in Deck");
+                            Console.WriteLine($"{battle.userB.username} has {deB.DeckCards.Count} Cards in Deck");
+
                         }
 
-                        // next rounds. 
+                        // case: draw
+                        if (RoundWinner == 0)
+                        {
+                           
+                            Console.WriteLine($"{deA.DeckCards[0].card_name} with {deA.DeckCards[0].damage} {deA.DeckCards[0].element_type}-DAMAGE equals {deB.DeckCards[0].card_name} with the {deB.DeckCards[0].damage} {deB.DeckCards[0].element_type}-DAMAGE");
+                            Console.WriteLine($"{ round} is a Draw!");
+                           
+
+                            deA.DeckCards.RemoveAt(0);
+                            deB.DeckCards.RemoveAt(0);
+                            Console.WriteLine($"{battle.userA.username} has {deA.DeckCards.Count} Cards in Deck");
+                            Console.WriteLine($"{battle.userB.username} has {deB.DeckCards.Count} Cards in Deck");
+                           
+                        }
+          
                         round++;
                     }
                     else
                     {
+                        DataBaseConnection db = new DataBaseConnection();
+                        NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
+                        var cmd = new NpgsqlCommand("", con);
+                        // case deckA no cards -> userB win
+                        if (deA.DeckCards.Count == 0 && deB.DeckCards.Count > 0)
+                        {
+                           
+                            Console.WriteLine($"{battle.userB.username} WINS this GAME in {round} ROUNDS.");
+                            battle.userB.win++;
+                            battle.userA.loos++;
 
-                    
-                    DataBaseConnection db = new DataBaseConnection();
-                    NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
-                    var cmd = new NpgsqlCommand("", con);
-                    // case userA has no cards and userB has no cards
-                    if (deA.DeckCards.Count == 0 && deB.DeckCards.Count == 0)
-                    {
-                        Console.WriteLine();
+                            battle.userB.elo += 20;
+                            battle.userA.elo -= 15;
 
-                        battle.userA.Draw++; // bug draw no cards moved
-                        battle.userB.Draw++;
+                            // ADD 2 coins TO WINNER
+                            db.AddCoins(battle.userB.uid, 2, cmd);
 
-                        goBattle = false;
+                            roundGo = false;
+                        }
+                        // case deckB no cards -> userA win
+                        if (deB.DeckCards.Count == 0 && deA.DeckCards.Count > 0)
+                        {
+                           
+                            Console.WriteLine($"{battle.userA.username} WINS this GAME in {round} ROUNDS.");
+                           
+
+                            battle.userA.win++;
+                            battle.userB.loos++;
+
+                            battle.userA.elo += 20;
+                            battle.userB.elo -= 15;
+
+                            // ADD 2 coins TO WINNER
+                            db.AddCoins(battle.userA.uid, 2, cmd);
+
+                            roundGo = false;
+                        }
+                        // case both no cards
+                        if (deA.DeckCards.Count == 0 && deB.DeckCards.Count == 0)
+                        {
+                            
+                            Console.WriteLine($"{battle.userA.username} and {battle.userB.username}  NO Cards left! This Game is a Draw!");
+                            
+                            battle.userA.draw++;
+                            battle.userB.draw++;
+
+                            roundGo = false;
+                        }
                     }
-                    // winner a
-                    if (deB.DeckCards.Count == 0 && deA.DeckCards.Count > 0)
-                    {
-                        Console.WriteLine($"{battle.userA.UserName} winner of the Game in {round} round. ");
-                        battle.userA.Win++;
-                        battle.userB.Loos++;
-
-                        battle.userA.Elo += 20;
-                        battle.userB.Elo -= 15;
-
-                        // test so far.
-
-                        goBattle = false;
-                    }
-                    // winner b
-                    if (deA.DeckCards.Count == 0 && deB.DeckCards.Count == 0)
-                    {
-                            Console.WriteLine($"{battle.userB.UserName} winner of the Game in {round} round. ");
-                            battle.userB.Win++;
-                            battle.userA.Loos++;
-
-                            battle.userB.Elo += 20;
-                            battle.userA.Elo -= 15;
-
-                            // test so far.
-
-                            goBattle = false;
-                    }
-
-
                 }
-
-                 }
                 else
                 {
-                    Console.WriteLine("The End of Game. Reached 100 rounds !"); // 
-                    battle.userA.Draw++;
-                    battle.userB.Draw++;
-                    goBattle = false;
-
+                    Console.WriteLine(" Round 100....so it is a DRAW!.");
+                    battle.userA.draw++;
+                    battle.userB.draw++;
+                    roundGo = false;
                 }
-            }                   
+            }
             return battle;
         }
 
-        // multiplicates the damage
-        public decimal DaamageCalculator(Card cardA, Card cardB)
+
+
+
+        public int BattleWithTwoCards(Card cardA, Card cardB)
         {
-            if (cardA.CardType == "spell" || cardB.CardType == "spell")
+
+            // without spell
+            if (cardA.card_type == "monster" && cardB.card_type == "monster")
             {
-                switch(cardA.ElementType)
+                if (cardA.damage > cardB.damage) return 1;
+                if (cardA.damage < cardB.damage) return 2;
+                if (cardA.damage == cardB.damage) return 0; // bug im damage
+            }
+            // with spell
+            if (cardA.card_type == "spell" || cardB.card_type == "spell")
+            {
+                decimal c1 = cardA.damage;
+                if (c1 * DaamageCalculator(cardA, cardB) > cardB.damage)
+                {
+                    return 1;
+                }
+                if (c1 * DaamageCalculator(cardA, cardB) < cardB.damage)
+                {
+                    return 2;
+                }
+                if (c1 * DaamageCalculator(cardA, cardB) == cardB.damage)
+                {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+        decimal DaamageCalculator(Card cardA, Card cardB)
+        {
+            if (cardA.card_type == "spell" || cardB.card_type == "spell")
+            {
+                switch (cardA.element_type)
                 {
                     case "water":
-                        switch(cardB.ElementType) 
+                        switch (cardB.element_type)
                         {
                             case "water":
                                 return 1;
-                            case "normal":
-                                return 0.5m;
                             case "fire":
                                 return 2;
+                            case "normal":
+                                return 0.5m;
                         }
                         break;
-                   // default: 
-                    // fire
-                    case "fire":  
-                      switch (cardB.ElementType)
+                    case "fire":
+                        switch (cardB.element_type)
                         {
                             case "water":
                                 return 0.5m;
-                            case "normal":
-                                return 2;
                             case "fire":
                                 return 1;
+                            case "normal":
+                                return 2;
                         }
                         break;
-                    // normal
                     case "normal":
-                        switch(cardB.ElementType)
+                        switch (cardB.element_type)
                         {
                             case "water":
                                 return 2;
-                            case "normal":
-                                return 1;
                             case "fire":
                                 return 0.5m;
-                           
+                            case "normal":
+                                return 1;
                         }
                         break;
-                       // EditAndContinueLogEntry;
-                  default:
-                      //  Console.WriteLine(Card);
+                    default: // "normal"
                         break;
-
-
                 }
             }
             return 1;
         }
-
-        public decimal BattleWithTwoCards(Card cardA, Card cardB)
+      
+        public async Task<List<Card>> GetCardDeck()
         {
-         // in this case monster must be involved. // and no monster and speLL?// elementType no effect
-            if (cardA.CardType == "monster" && cardB.CardType == "monster")
-            {
-                // Card.Damage : cardA.Damage > cardB.Damage return 1 ? ReturnTypeEncoder 2;
-                if(cardA.Damage > cardB.Damage) return 1;
-                if (cardA.Damage < cardB.Damage) return 2;
-                if(cardA.Damage == cardB.Damage) return 0; // bug im damage
-
-
-                // 
-            }
-            // in this case Spell is involved.
-            if (cardA.CardType == "spell" || cardB.CardType == "spell" )
-            {
-                decimal caA = cardA.Damage;
-                if (caA * DaamageCalculator(cardA, cardB) > cardB.Damage)
+            CardDeck.AllCards.Clear();
+            DataBaseConnection db = new DataBaseConnection();
+            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI");
+            var cmd = new NpgsqlCommand("", con);
+            cmd.CommandText = "SELECT * FROM carddeck";
+            await using (var reader = await cmd.ExecuteReaderAsync())
+                while (await reader.ReadAsync())
                 {
-
-                    return 1;
+                    Card card = new Card();
+                    card.cid = (int)reader["cid"];
+                    card.card_type = (string)reader["card_type"];
+                    card.card_name = (string)reader["card_name"];
+                    card.element_type = (string)reader["element_type"];
+                    card.damage = (int)reader["damage"]; // no cast.
+                    CardDeck.AllCards.Add(card);
                 }
-                if (caA * DaamageCalculator(cardA, cardB) <  cardB.Damage)
-                {
-                    return 2;
-                }
-                if (caA * DaamageCalculator(cardA, cardB) == cardB.Damage)
-                {
-                    return 0;
-                }
-
-
-            }
-
-
-            return 0m;
-
+            return CardDeck.AllCards;
         }
-
-        public List<Card> GetLookAtCardDeck(int[] deck, List<Card> CD )
+        public List<Card> GetLookAtCardDeck(int[] deck, List<Card> CD)
         {
             CardDeck cd = new CardDeck();
-            foreach(int CId in deck)
+            foreach (int cid in deck)
             {
-                foreach(var card in CD)
+                foreach (var card in CD)
                 {
-                    if(card.CId == CId) cd.DeckCards.Add(card);
+                    if (card.cid == cid) cd.DeckCards.Add(card);
                 }
             }
             return cd.DeckCards;
         }
-
-
-        public async Task<List<Card>> GetCardDeck()
-        {
-            CardDeck.AllCards.Clear(); // keine mehr
-                                       // DatabaseGeneratedOption
-
-            DataBaseConnection db = new DataBaseConnection();
-            NpgsqlConnection con = await db.ConnectDB("localhost", "swe1user", "swe1pw", "mtcg_theOriginI"); // db erst auf table !!!
-            var cmd = new NpgsqlCommand("", con);
-            cmd.CommandText = "SELECT * FROM CardDeck";
-            await using(var reader = await cmd.ExecuteReaderAsync())
-                while(await reader.ReadAsync())
-                {
-                    Card card = new Card();
-                    card.CId = (int)reader["CId"];
-                    //card.CId = (int)reader["CId"],
-                    card.CardType = (string)reader["CardType"];
-                    card.CardName = (string)reader["CardName"];
-                    card.ElementType = (string)reader["ElementType"];
-                    card.Damage = (int)reader["Damage"]; // auf decimal wechseln BUG
-                    CardDeck.AllCards.Add(card);
-                                      
-                }
-                return CardDeck.AllCards;
-         }
-
-
-        
-
 
 
 
@@ -322,10 +282,9 @@ namespace MTCG_TheOrigin_SubProject.DA
         int[] ShuffleDeck(int[] deck)
         {
             Random random = new Random();
-            deck = deck.OrderBy(x => random.Next()).ToArray();  
+            deck = deck.OrderBy(x => random.Next()).ToArray();
             return deck;
         }
-
 
     }
 }

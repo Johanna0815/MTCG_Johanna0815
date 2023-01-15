@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,15 +8,10 @@ namespace MTCG_TheOrigin_SubProject.Model
 {
     public class Card
     {
-
-        public int CId { get; set; }
-        public string CardType { get; set; }
-
-        public string CardName { get; set; }
-       
-        public string ElementType { get;  set; }
-
-        public int Damage { get; set; }
-
+        public int cid { get; set; }
+        public string card_type { get; set; }
+        public string card_name { get; set; }
+        public string element_type { get; set; }
+        public int damage { get; set; }
     }
 }

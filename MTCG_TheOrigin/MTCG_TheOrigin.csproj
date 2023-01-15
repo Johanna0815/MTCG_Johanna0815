@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MTCG_theOrigin_SUB.Test\MTCG_TheOrigin_SUB.Test.csproj" />
     <ProjectReference Include="..\MTCG_TheOrigin_SubProject.BL\MTCG_TheOrigin_SubProject.BL.csproj" />
     <ProjectReference Include="..\MTCG_TheOrigin_Subproject.DA\MTCG_TheOrigin_Subproject.DA.csproj" />
     <ProjectReference Include="..\MTCG_TheOrigin_SubProject.HSL\MTCG_TheOrigin_SubProject.HSL.csproj" />
