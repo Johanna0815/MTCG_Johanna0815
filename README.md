@@ -35,6 +35,11 @@ each request needs UserName and Password OR AccessToken
 each request needs UserName and Password OR AccessToken
 #### Describes lessons learned
 lessons learned. eamm Http Protocol, enpoints, WebserverLifeCircle, C# async Tasks, using an own created Webserver. 
+NEVER delete Block of Code, before pulling/pushing/commiting to GitHuB. {I just use one of the TestProjects, but nearly all packages are in the other one; I deleted, But regreted it just a view moment afterwards, bc all tests failed, when I removed. So i just fixed it picking from github again, ..}
+![image](https://user-images.githubusercontent.com/81578777/212503178-b154e6a1-7142-483c-b2e4-826200dad956.png)
+
+
+
 
 #### Describes unit testing decisions
 Tests separate with NUnit.Framework; XUnit. StepByStep as Curl would do it like Integration Tests.
